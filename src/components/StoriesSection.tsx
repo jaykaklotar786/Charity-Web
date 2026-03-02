@@ -10,7 +10,7 @@ export default function StoriesSection() {
             Inspiring tales of transformation
           </h2>
 
-          <p className="text-gray-600 mt-4 max-w-2xl mx-auto text-sm sm:text-base">
+          <p className="text-gray-600 mt-4 pb-8 max-w-2xl mx-auto text-sm sm:text-base">
             Get inspired by the remarkable stories of transformation through our
             non-profit organization. Join us in making a positive impact today.
           </p>
@@ -21,7 +21,7 @@ export default function StoriesSection() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-12">
             {/* LEFT */}
             <div>
-              <div className="relative w-full h-52 sm:h-64 md:h-72 rounded-2xl overflow-hidden">
+              <div className="relative w-full h-52 sm:h-64 md:h-72 -mt-20 rounded-2xl overflow-hidden">
                 <Image
                   src="/Images/home-06.jpg"
                   alt="Story 1"
@@ -47,7 +47,7 @@ export default function StoriesSection() {
 
             {/* RIGHT */}
             <div className="md:border-l md:border-[#cfd5bf] md:pl-10">
-              <div className="relative w-full h-52 sm:h-64 md:h-72 rounded-2xl overflow-hidden">
+              <div className="relative w-full h-52 sm:h-64 md:h-72 -mt-20 rounded-2xl overflow-hidden">
                 <Image
                   src="/Images/home-07.jpg"
                   alt="Story 2"

@@ -16,7 +16,7 @@ export default function Hero() {
           us in making a difference lives together.
         </p>
 
-        <button className="bg-[#66B40B] hover:bg-[#81b82e] transition duration-300 px-6 sm:px-8 py-3 sm:py-4 rounded-lg font-semibold text-sm sm:text-base">
+        <button className="bg-[#66B40B] hover:bg-[#81b82e] transition duration-300 px-6 sm:px-8 py-3 sm:py-4 rounded-lg font-bold text-sm sm:text-base">
           Donate Now
         </button>
       </div>

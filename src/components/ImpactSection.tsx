@@ -3,12 +3,12 @@ import Counter from './Counter';
 
 export default function ImpactSection() {
   return (
-    <section className="bg-[#f4f4ef] py-16 sm:py-20 md:py-24">
+    <section className="bg-transparent py-16 sm:py-20 md:py-24">
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
         {/* Top Text Area */}
-        <div className="grid md:grid-cols-2 gap-8 md:gap-12 items-start">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
           <div>
-            <p className="uppercase text-xs sm:text-sm tracking-widest text-gray-500 mb-4">
+            <p className="uppercase text-xs sm:text-sm tracking-widest text-black pb-4">
               Our Impact
             </p>
 
@@ -17,7 +17,7 @@ export default function ImpactSection() {
             </h2>
           </div>
 
-          <p className="text-gray-600 leading-relaxed text-sm sm:text-base">
+          <p className="text-gray-600 leading-relaxed text-sm sm:text-base md:max-w-md ">
             We have made a significant impact in our community through our
             non-profit organization. By providing services and support to those
             in need, we have created a positive change.
@@ -57,7 +57,7 @@ export default function ImpactSection() {
         </div>
 
         {/* Green  Box */}
-        <div className="bg-green-600 rounded-2xl mt-16 md:mt-20 p-6 sm:p-8 md:p-10 flex flex-col md:flex-row justify-between items-start md:items-center text-white gap-6">
+        <div className="bg-[#66B40B] rounded-2xl mt-16 md:mt-20 p-6 sm:p-8 md:p-10 flex flex-col md:flex-row justify-between items-start md:items-center text-white gap-6">
           <div>
             <h3 className="text-2xl sm:text-3xl font-bold">
               We can create a better tomorrow
@@ -70,7 +70,7 @@ export default function ImpactSection() {
 
           <Button
             variant="default"
-            className="bg-white hover:bg-green-900 text-black px-6 py-3 rounded-md font-semibold w-full sm:w-auto"
+            className="bg-white hover:bg-green-950 text-black px-6 py-3 rounded-md font-semibold w-full sm:w-auto"
           >
             Donate Now
           </Button>

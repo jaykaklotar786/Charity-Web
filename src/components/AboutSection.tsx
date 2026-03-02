@@ -4,88 +4,97 @@ import FeatureCards from './FeatureCards';
 
 export default function AboutSection() {
   return (
-    <section className=" bg-[#F7F9F4] py-20 flex flex-col gap-10">
+    <section className=" bg-[#F7F9F1] py-20 flex flex-col gap-10">
       <div className="relative -mt-50 z-20">
         <FeatureCards />
       </div>
 
-      <div className="max-w-300 mx-auto pt-20 pb-25  bg-[#F7F9F4]">
+      <div className="max-w-300 mx-auto pt-20 pb-15 bg-[#F7F9F1]">
         {/* Bottom Section */}
         <div className="grid md:grid-cols-2 gap-12 items-start">
           {/* Left Text */}
-          <div className="max-w-112.5">
-            <p className="uppercase text-sm tracking-widest text-[#000000] mb-2">
+          <div className="px-4 sm:px-6 md:px-0">
+            <p className="uppercase text-xs sm:text-sm tracking-[3px] text-black mb-3">
               ABOUT US
             </p>
 
-            <h2 className="text-[48px] font-semibold leading-tight text-[#2C3A04] mb-4">
+            <h2 className="text-[28px] sm:text-[34px] md:text-[40px] lg:text-[48px] font-semibold leading-tight text-[#2C3A04] mb-5">
               Our journey of compassion and hope
             </h2>
 
-            <p className="text-[#46512A] text-[15px] leading-relaxed pb-6">
+            <p className="text-[#46512A] text-sm sm:text-base leading-relaxed mb-5 max-w-130">
               Join us on a journey towards compassion and hope. Through our
               non-profit organisation, we strive to make a positive impact on
               the world. Give back to your community and be a part of something
               greater than yourself.
             </p>
 
-            <p className="text-[#46512A] text-[15px] leading-relaxed pb-6">
+            <p className="text-[#46512A] text-sm sm:text-base leading-relaxed mb-8 max-w-130">
               A transformational journey towards bringing hope and compassion to
               the world.
             </p>
 
             <Button
               variant="outline"
-              className="px-8 py-3 w-[143.22px] h-14 bg-[#F7F9F1] rounded-xl border-[#1f2b0a] text-[#1f2b0a] text-[18px] hover:bg-[#1f2b0a] hover:text-white  mb-12"
+              className="
+      px-6
+      py-3
+      rounded-xl
+      border-[#1f2b0a]
+      text-[#1f2b0a]
+      text-sm sm:text-base
+      hover:bg-[#1f2b0a]
+      hover:text-white
+    "
             >
               Read More
             </Button>
-
-            {/* Donation and Buy Now section */}
           </div>
 
           {/* Right Images - Fixed Grid Layout */}
-          <div className="relative grid grid-cols-2 gap-5 ">
-            {/* First Column */}
-            <div className="space-y-3 gap-8">
-              <div className="rounded-2xl overflow-hidden pb-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Left Column */}
+            <div className="flex flex-col gap-6">
+              <div className="w-full h-85 rounded-3xl overflow-hidden">
                 <Image
                   src="/Images/home-0001.jpg"
                   alt=""
-                  width={309.66}
-                  height={338.67}
-                  className=""
+                  width={310}
+                  height={340}
+                  className="w-full h-full object-cover"
                 />
               </div>
-              <div className="rounded-2xl overflow-hidden ">
+
+              <div className="w-full h-62.5 rounded-3xl overflow-hidden">
                 <Image
                   src="/Images/home-03.jpg"
                   alt=""
-                  width={309.66}
-                  height={247.72}
-                  className=""
+                  width={310}
+                  height={250}
+                  className="w-full h-full object-cover"
                 />
               </div>
             </div>
 
-            {/* Second Column - with offset */}
-            <div className="space-y-3 mt-8">
-              <div className="rounded-2xl overflow-hidden pt-25 pb-8 ">
+            {/* Right Column */}
+            <div className="flex flex-col gap-6 md:mt-16">
+              <div className="w-full h-62.5 rounded-3xl overflow-hidden">
                 <Image
                   src="/Images/home-02.jpg"
                   alt=""
-                  width={309.66}
-                  height={247.72}
-                  className=""
+                  width={310}
+                  height={250}
+                  className="w-full h-full object-cover"
                 />
               </div>
-              <div className="rounded-2xl overflow-hidden ">
+
+              <div className="w-full h-85 rounded-3xl overflow-hidden">
                 <Image
                   src="/Images/home-0004.jpg"
                   alt=""
-                  width={309.66}
-                  height={338.67}
-                  className=""
+                  width={310}
+                  height={340}
+                  className="w-full h-full object-cover"
                 />
               </div>
             </div>
