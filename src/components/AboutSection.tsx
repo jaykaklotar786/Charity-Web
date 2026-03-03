@@ -36,16 +36,7 @@ export default function AboutSection() {
 
             <Button
               variant="outline"
-              className="
-      px-6
-      py-3
-      rounded-xl
-      border-[#1f2b0a]
-      text-[#1f2b0a]
-      text-sm sm:text-base
-      hover:bg-[#1f2b0a]
-      hover:text-white
-    "
+              className="px-6 py-3 rounded-xl bg-[#F7F9F1] border-[#1f2b0a] text-[#1f2b0a] text-sm sm:text-base hover:bg-[#1f2b0a] hover:text-white"
             >
               Read More
             </Button>

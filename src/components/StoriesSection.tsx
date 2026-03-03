@@ -6,11 +6,11 @@ export default function StoriesSection() {
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Heading */}
         <div className="text-center mb-12 sm:mb-16">
-          <h2 className="text-3xl sm:text-4xl md:text-5xl font-semibold text-[#1f2b0a] leading-tight">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-semibold text-[#2C3A04] leading-tight">
             Inspiring tales of transformation
           </h2>
 
-          <p className="text-gray-600 mt-4 pb-8 max-w-2xl mx-auto text-sm sm:text-base">
+          <p className="text-[#46512A] mt-4 pb-8 max-w-2xl mx-auto text-sm sm:text-base">
             Get inspired by the remarkable stories of transformation through our
             non-profit organization. Join us in making a positive impact today.
           </p>
@@ -30,18 +30,18 @@ export default function StoriesSection() {
                 />
               </div>
 
-              <h3 className="text-xl sm:text-2xl font-semibold mt-6 text-[#1f2b0a]">
+              <h3 className="text-xl sm:text-2xl font-semibold mt-6 text-[#2C3A04]">
                 The Special One
               </h3>
 
-              <p className="text-gray-600 mt-4 leading-relaxed text-sm sm:text-base">
+              <p className="text-[#46512A] mt-4 leading-relaxed text-sm sm:text-base">
                 Join our non-profit organisation to help create a brighter
                 future for those in need. Every donation counts towards making a
                 difference in the lives of those less fortunate.
               </p>
 
-              <button className="mt-6 text-[#1f2b0a] font-medium hover:underline">
-                Read More →
+              <button className="mt-6 text-[#1f2b0a] font-bold text-[18px] ">
+                Read More ➝
               </button>
             </div>
 
@@ -66,8 +66,8 @@ export default function StoriesSection() {
                 resources and opportunities needed for success.
               </p>
 
-              <button className="mt-6 text-[#1f2b0a] font-medium hover:underline">
-                Read More →
+              <button className="mt-6 text-[#1f2b0a] font-bold text-[18px] ">
+                Read More ➝
               </button>
             </div>
           </div>

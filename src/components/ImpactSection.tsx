@@ -57,21 +57,18 @@ export default function ImpactSection() {
         </div>
 
         {/* Green  Box */}
-        <div className="bg-[#66B40B] rounded-2xl mt-16 md:mt-20 p-6 sm:p-8 md:p-10 flex flex-col md:flex-row justify-between items-start md:items-center text-white gap-6">
+        <div className="  w-full max-w-6xl bg-[#66B40B] rounded-2xl mt-16 md:mt-20 p-6 sm:p-8 md:p-10 flex flex-col md:flex-row justify-between font-[16px] items-start md:items-center text-white ">
           <div>
-            <h3 className="text-2xl sm:text-3xl font-bold">
+            <h3 className="text-2xl font-white sm:text-[40px] font-bold mb-2">
               We can create a better tomorrow
             </h3>
-            <p className="mt-3 text-green-100 text-sm sm:text-base">
+            <p className="mt-3 text-white text-sm sm:text-[16px] md:text-[18px]">
               Every dollar counts and helps us bring hope and essential
               resources to those in need.
             </p>
           </div>
 
-          <Button
-            variant="default"
-            className="bg-white hover:bg-green-950 text-black px-6 py-3 rounded-md font-semibold w-full sm:w-auto"
-          >
+          <Button className="bg-white text-black hover:bg-green-950 hover:text-white w-[106.48px] sm:w-auto mt-6 px-6 sm:px-8 py-3 rounded-md font-semibold text-sm sm:text-[18px] transition-all duration-300">
             Donate Now
           </Button>
         </div>
