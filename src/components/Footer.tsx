@@ -1,6 +1,8 @@
 'use client';
 
 import { Facebook, Twitter, Instagram, Youtube } from 'lucide-react';
+import Image from 'next/image';
+import ScrollToTopButton from './ScrollButton';
 
 export default function Footer() {
   return (
@@ -10,13 +12,15 @@ export default function Footer() {
         {/* Logo + Description */}
         <div>
           <div className="flex items-center gap-3 mb-4">
-            <img
+            <Image
               src="/Images/site-logo.svg"
               alt="Charity Logo"
               className="h-8 w-auto"
+              width={100}
+              height={40}
             />
           </div>
-          <p className="text-sm text-gray-600 leading-relaxed">
+          <p className="text-[16px] text-[#46512A] leading-relaxed mb-7">
             The power of giving: Support a cause and make a difference through
             charity.
           </p>
@@ -25,7 +29,7 @@ export default function Footer() {
         {/* About */}
         <div>
           <h4 className="font-semibold mb-4">About Us</h4>
-          <ul className="space-y-2 text-gray-600 text-sm">
+          <ul className="space-y-2 text-[#46512A] text-[16px]">
             <li>Our History</li>
             <li>What We Believe</li>
             <li>Our Programs</li>
@@ -35,8 +39,8 @@ export default function Footer() {
 
         {/* Ways To Give */}
         <div>
-          <h4 className="font-semibold mb-4">Ways To Give</h4>
-          <ul className="space-y-2 text-gray-600 text-sm">
+          <h4 className="font-semibold ">Ways To Give</h4>
+          <ul className="space-y-2 text-[#46512A] text-[16px]">
             <li>Fundraise</li>
             <li>Planned Giving</li>
             <li>Brand Partnership</li>
@@ -46,8 +50,8 @@ export default function Footer() {
 
         {/* Contact */}
         <div>
-          <h4 className="font-semibold mb-4">Contact Info</h4>
-          <ul className="space-y-2 text-gray-600 text-sm">
+          <h4 className="font-semibold ">Contact Info</h4>
+          <ul className="space-y-2 text-[#46512A] text-[16px]">
             <li>1234 Thornridge Cir. Syracuse, Connecticut 56789</li>
             <li>(406) 555-0121</li>
             <li>mail@example.com</li>
@@ -65,26 +69,21 @@ export default function Footer() {
           <div className="flex items-center gap-5">
             <Facebook
               size={18}
-              className="cursor-pointer hover:text-green-700 transition"
+              className="cursor-pointer hover:text-[#d2d8c0] transition"
             />
             <Twitter
               size={18}
-              className="cursor-pointer hover:text-green-700 transition"
+              className="cursor-pointer hover:text-[#d2d8c0] transition"
             />
             <Instagram
               size={18}
-              className="cursor-pointer hover:text-green-700 transition"
+              className="cursor-pointer hover:text-[#d2d8c0] transition"
             />
             <Youtube
               size={18}
-              className="cursor-pointer hover:text-green-700 transition"
+              className="cursor-pointer hover:text-[#d2d8c0] transition"
             />
-            <button
-              onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-              className="fixed bottom-6 right-6 bg-[#3d4a22] text-white p-3 rounded-md"
-            >
-              ↑
-            </button>
+            <ScrollToTopButton />
           </div>
         </div>
       </div>

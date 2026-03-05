@@ -68,7 +68,7 @@ export default function ImpactSection() {
             </p>
           </div>
 
-          <Button className="bg-white text-black hover:bg-green-950 hover:text-white w-[106.48px] sm:w-auto mt-6 px-6 sm:px-8 py-3 rounded-md font-semibold text-sm sm:text-[18px] transition-all duration-300">
+          <Button className="bg-white text-black hover:bg-[#46512A] hover:text-white w-[106.48px] sm:w-auto mt-6 px-6 sm:px-8 py-3 rounded-md font-semibold text-sm sm:text-[18px] transition-all duration-300">
             Donate Now
           </Button>
         </div>

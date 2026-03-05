@@ -23,7 +23,7 @@ export function Header() {
           />
         </Link>
 
-        {/* Desktop Menu */}
+        {/* Menu */}
         <nav className="hidden md:flex mr-9 items-center font-semibold h-full">
           <Link
             href="/"
@@ -57,14 +57,14 @@ export function Header() {
           </Link>
         </nav>
 
-        {/* Desktop Button */}
+        {/* Button */}
         <div className="hidden md:flex items-center">
           <Button className="bg-white text-[#2C3A04] text-[18px] px-6 py-4.5 rounded-b-sm  font-semibold transition-all duration-300 hover:bg-[#7FBF2F] hover:text-[#2C3A04] w-[111.66px] h-13.5">
             Donate
           </Button>
         </div>
 
-        {/* Mobile Menu Button */}
+        {/* Mobile Button */}
         <button
           className="md:hidden"
           onClick={() => setIsMenuOpen(!isMenuOpen)}

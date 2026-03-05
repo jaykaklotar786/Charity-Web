@@ -42,7 +42,7 @@ export default function AboutSection() {
             </Button>
           </div>
 
-          {/* Right Images - Fixed Grid Layout */}
+          {/* Right Images  */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Left Column */}
             <div className="flex flex-col gap-6">

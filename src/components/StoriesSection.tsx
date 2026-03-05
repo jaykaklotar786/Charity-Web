@@ -16,8 +16,7 @@ export default function StoriesSection() {
           </p>
         </div>
 
-        {/* Combined Card */}
-        <div className="bg-[#f6f7f2] border border-[#cfd5bf] rounded-3xl p-6 sm:p-8 md:p-10">
+        <div className="bg-[#ffffff] border border-[#cfd5bf] rounded-3xl p-6 sm:p-8 md:p-10">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-12">
             {/* LEFT */}
             <div>
@@ -96,7 +95,7 @@ export default function StoriesSection() {
                   src={`/Images/${logo}`}
                   alt="partner logo"
                   fill
-                  className="object-contain opacity-60 hover:opacity-100 transition duration-300"
+                  className="object-contain opacity-60  transition duration-300"
                 />
               </div>
             ))}
