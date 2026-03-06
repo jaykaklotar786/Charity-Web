@@ -5,9 +5,12 @@ import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Menu, X } from 'lucide-react';
 import { useState } from 'react';
+import { usePathname } from 'next/navigation';
 
 export function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  const pathname = usePathname();
 
   return (
     <header className="absolute top-0 left-0 w-full h-25 z-50 text-white">
@@ -27,31 +30,32 @@ export function Header() {
         <nav className="hidden md:flex mr-9 items-center font-semibold h-full">
           <Link
             href="/"
-            className="px-4 h-full w-[77.88px] flex items-center duration-300 hover:text-[#7FBF2F]"
+            className={`px-4 h-full w-[77.88px] flex items-center duration-300 hover:text-[#7FBF2F] 
+  ${pathname === '/' ? 'text-[#7FBF2F]' : 'text-white'}`}
           >
             Home
           </Link>
           <Link
             href="/about"
-            className="px-4 h-full w-[103.58px] flex items-center duration-300 hover:text-[#7FBF2F]"
+            className={`px-4 h-full w-[103.58px] flex items-center duration-300 hover:text-[#7FBF2F] ${pathname === '/about' ? 'text-[#7FBF2F]' : 'text-white'}`}
           >
             About Us
           </Link>
           <Link
             href="/causes"
-            className="px-4 h-full w-[105.69px] flex items-center duration-300 hover:text-[#7FBF2F]"
+            className="px-4 h-full w-[105.69px] flex items-center duration-300 hover:text-[#7FBF2F] ${pathname === '/causes' ? 'text-[#7FBF2F]' : 'text-white'}"
           >
             Our Work
           </Link>
           <Link
             href="/stories"
-            className="px-4 h-full w-[87.2px] flex items-center duration-300 hover:text-[#7FBF2F]"
+            className="px-4 h-full w-[87.2px] flex items-center duration-300 hover:text-[#7FBF2F] ${pathname === '/stories' ? 'text-[#7FBF2F]' : 'text-white'}"
           >
             Stories
           </Link>
           <Link
             href="/contact"
-            className="px-4 h-full w-[96.3px] flex items-center duration-300 hover:text-[#7FBF2F]"
+            className="px-4 h-full w-[96.3px] flex items-center duration-300 hover:text-[#7FBF2F] ${pathname === '/contact' ? 'text-[#7FBF2F]' : 'text-white'}"
           >
             Contact
           </Link>

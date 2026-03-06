@@ -18,7 +18,7 @@ export default function AboutSection() {
               ABOUT US
             </p>
 
-            <h2 className="text-[28px] sm:text-[34px] md:text-[40px] lg:text-[48px] font-semibold leading-tight text-[#2C3A04] mb-5">
+            <h2 className="max-w-300 text-[28px] sm:text-[34px] md:text-[40px] lg:text-[48px] font-semibold leading-tight text-[#2C3A04] mb-5">
               Our journey of compassion and hope
             </h2>
 
