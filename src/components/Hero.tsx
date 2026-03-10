@@ -11,12 +11,12 @@ export default function Hero() {
           Empowering Change, One Step at a Time
         </h1>
 
-        <p className="text-[24px] sm:text-[24px] md:text-[24px] lg:text-[24px] pb-10 leading-9 tracking-[0.2px] max-w-185 mx-auto">
+        <p className="text-[24px] pb-10 leading-9 tracking-[0.01px] max-w-[715px] mx-auto">
           Every small act of kindness creates a ripple of positive change. Join
           us in making a difference lives together.
         </p>
 
-        <button className="w-[156.48px] bg-[#66B40B] hover:bg-[#81b82e] text-[18px] font-bold transition duration-300 px-6 sm:px-8 py-3 sm:py-4 rounded-lg text-sm sm:text-base">
+        <button className=" bg-[#66B40B] hover:bg-[#81b82e] text-[18px] w-[156.48px] tracking-[0.1px] whitespace-nowrap flex items-center mx-auto justify-center font-bold transition duration-300 px-6  h-14 rounded-md">
           Donate Now
         </button>
       </div>

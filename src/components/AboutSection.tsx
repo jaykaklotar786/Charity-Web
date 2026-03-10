@@ -35,25 +35,28 @@ export default function AboutSection() {
 
             <Button
               variant="outline"
-              className="px-6 py-3 rounded-xl bg-[#F7F9F1] border-[#1f2b0a] text-[#1f2b0a] text-sm sm:text-base hover:bg-[#1f2b0a] hover:text-white"
+              className="w-[143.22px] h-14 px-6 py-3 text-[18px]  bg-[#F7F9F1] font-bold border-[#1f2b0a] text-[#1f2b0a] text-sm sm:text-[18px] hover:bg-[#1f2b0a] hover:text-white"
             >
               Read More
             </Button>
           </div>
           {/* Right Images */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* Left Column */}{' '}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-40">
+            {/* Left Column */}
             <div className="flex flex-col gap-6">
-              <div className="w-full h-85 rounded-3xl overflow-hidden">
+              {/* Top Big */}
+              <div className="w-full md:w-77.5 h-85 rounded-3xl overflow-hidden">
                 <Image
                   src="/Images/home-0001.jpg"
                   alt=""
-                  width={320}
-                  height={350}
+                  width={310}
+                  height={340}
                   className="w-full h-full object-cover"
                 />
               </div>
-              <div className="w-full h-62.5 rounded-3xl overflow-hidden">
+
+              {/* Bottom Small */}
+              <div className="w-full md:w-77.5 h-62.5 rounded-3xl overflow-hidden">
                 <Image
                   src="/Images/home-03.jpg"
                   alt=""
@@ -63,9 +66,11 @@ export default function AboutSection() {
                 />
               </div>
             </div>
+
             {/* Right Column */}
-            <div className="flex flex-col gap-6 md:mt-16">
-              <div className="w-full h-62.5 rounded-3xl overflow-hidden">
+            <div className="flex flex-col gap-6 md:mt-24">
+              {/* Top Small */}
+              <div className="w-full md:w-77.5 h-62.5 rounded-3xl overflow-hidden">
                 <Image
                   src="/Images/home-02.jpg"
                   alt=""
@@ -74,7 +79,9 @@ export default function AboutSection() {
                   className="w-full h-full object-cover"
                 />
               </div>
-              <div className="w-full h-85 rounded-3xl overflow-hidden">
+
+              {/* Bottom Big */}
+              <div className="w-full md:w-77.5 h-85 rounded-3xl overflow-hidden">
                 <Image
                   src="/Images/home-0004.jpg"
                   alt=""
