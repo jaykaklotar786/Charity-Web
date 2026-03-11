@@ -2,7 +2,10 @@ import Image from 'next/image';
 
 export default function StoriesSection() {
   return (
-    <section className="bg-[#f4f4ef] py-16 sm:py-20 lg:py-24 overflow-hidden">
+    <section className="bg-[#f7f9f4] py-16 sm:py-20 lg:py-24 overflow-hidden">
+      <div className="max-w-6xl mx-auto px-6">
+        <div className="w-full h-px bg-[#d6d6cc] my-20"></div>
+      </div>
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Heading */}
         <div className="text-center mb-12 sm:mb-16">

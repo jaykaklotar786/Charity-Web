@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button';
 
 export default function GetInvolvedSection() {
   return (
-    <section className="bg-[#f4f4ef] px-10 py-24">
+    <section className="bg-[#f4f9f1] px-10 py-24">
       <div className="max-w-6xl mx-auto px-6 grid md:grid-cols-2 gap-16 items-center ">
         {/* Left Image */}
         <div className="relative w-full h-64 sm:h-80 md:h-96 lg:h-125 rounded-2xl overflow-hidden">

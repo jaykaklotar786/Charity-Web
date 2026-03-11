@@ -70,10 +70,10 @@ export function Header() {
 
         {/* Mobile Button */}
         <button
-          className="md:hidden"
           onClick={() => setIsMenuOpen(!isMenuOpen)}
+          className="md:hidden w-11 h-11 border border-white/70 rounded-[10px] flex items-center justify-center"
         >
-          {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
+          {isMenuOpen ? <X size={22} /> : <Menu size={22} />}
         </button>
       </div>
 

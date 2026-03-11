@@ -11,7 +11,7 @@ export default function Hero() {
           Empowering Change, One Step at a Time
         </h1>
 
-        <p className="text-[24px] pb-10 leading-9 tracking-[0.01px] max-w-[715px] mx-auto">
+        <p className="text-[24px] pb-10 leading-9 tracking-[0.01px] max-w-178.75 mx-auto">
           Every small act of kindness creates a ripple of positive change. Join
           us in making a difference lives together.
         </p>
