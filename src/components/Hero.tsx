@@ -7,7 +7,7 @@ export default function Hero() {
 
       {/* Content */}
       <div className="max-w-270 z-10 mx-auto px-4 font-[80px] sm:px-5  tracking-[-1px] lg:px-10 text-center text-white">
-        <h1 className="text-[36px] sm:text-[36px] md:text-[64px] lg:text-[80px]  tracking-[-1px] font-semibold leading-22 pb-5">
+        <h1 className="text-[36px] sm:text-[36px] md:text-[64px] lg:text-[80px]  tracking-[-1px] font-semibold sm:leading-22 leati pb-5">
           Empowering Change, One Step at a Time
         </h1>
 

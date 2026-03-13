@@ -81,7 +81,7 @@ export default function StoriesSection() {
             Our Partners
           </p>
 
-          <div className="flex items-center justify-items-center w-full">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-y-8 items-center">
             {[
               'logo-01.svg',
               'logo-02.svg',
@@ -90,7 +90,7 @@ export default function StoriesSection() {
               'logo-05.svg',
               'logo-06.svg',
             ].map((logo, index) => (
-              <div key={index} className="relative w-[16.66%] h-[66.95px]">
+              <div key={index} className="relative w-full h-[60px]">
                 <Image
                   src={`/Images/${logo}`}
                   alt="partner logo"

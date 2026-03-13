@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 interface CounterProps {
   target: number;
@@ -16,13 +16,41 @@ export default function Counter({
   plus = false,
 }: CounterProps) {
   const [count, setCount] = useState(0);
+  const [startCounter, setStartCounter] = useState(false);
+  const counterRef = useRef<HTMLSpanElement>(null);
 
+  // 👇 detect when counter comes into view
   useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) {
+          setStartCounter(true);
+        }
+      },
+      { threshold: 0.5 },
+    );
+
+    if (counterRef.current) {
+      observer.observe(counterRef.current);
+    }
+
+    return () => {
+      if (counterRef.current) {
+        observer.unobserve(counterRef.current);
+      }
+    };
+  }, []);
+
+  // 👇 counter logic
+  useEffect(() => {
+    if (!startCounter) return;
+
     let start = 0;
     const increment = target / (duration / 16);
 
     const counter = setInterval(() => {
       start += increment;
+
       if (start >= target) {
         setCount(target);
         clearInterval(counter);
@@ -32,9 +60,8 @@ export default function Counter({
     }, 16);
 
     return () => clearInterval(counter);
-  }, [target, duration]);
+  }, [startCounter, target, duration]);
 
-  // 👇 Formatting logic
   const formatNumber = () => {
     if (format === 'million') {
       return (
@@ -45,5 +72,5 @@ export default function Counter({
     return count.toLocaleString();
   };
 
-  return <span>{formatNumber()}</span>;
+  return <span ref={counterRef}>{formatNumber()}</span>;
 }

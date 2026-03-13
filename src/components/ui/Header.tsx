@@ -1,16 +1,27 @@
 'use client';
 
+import { useEffect, useState } from 'react';
+import { onAuthStateChanged } from 'firebase/auth';
+import { auth } from '@/lib/firebase';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Menu, X } from 'lucide-react';
-import { useState } from 'react';
 import { usePathname } from 'next/navigation';
 
 export function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [user, setUser] = useState(null);
 
   const pathname = usePathname();
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      setUser(currentUser);
+    });
+
+    return () => unsubscribe();
+  }, []);
 
   return (
     <header className="absolute top-0 left-0 w-full h-25 z-50 text-white">
@@ -31,44 +42,68 @@ export function Header() {
           <Link
             href="/"
             className={`px-4 h-full w-[77.88px] flex items-center duration-300 hover:text-[#7FBF2F] 
-  ${pathname === '/' ? 'text-[#7FBF2F]' : 'text-white'}`}
+            ${pathname === '/' ? 'text-[#7FBF2F]' : 'text-white'}`}
           >
             Home
           </Link>
+
           <Link
             href="/about"
-            className={`px-4 h-full w-[103.58px] flex items-center duration-300 hover:text-[#7FBF2F] ${pathname === '/about' ? 'text-[#7FBF2F]' : 'text-white'}`}
+            className={`px-4 h-full w-[103.58px] flex items-center duration-300 hover:text-[#7FBF2F] 
+            ${pathname === '/about' ? 'text-[#7FBF2F]' : 'text-white'}`}
           >
             About Us
           </Link>
+
           <Link
             href="/causes"
-            className="px-4 h-full w-[105.69px] flex items-center duration-300 hover:text-[#7FBF2F] ${pathname === '/causes' ? 'text-[#7FBF2F]' : 'text-white'}"
+            className={`px-4 h-full w-[105.69px] flex items-center duration-300 hover:text-[#7FBF2F] 
+            ${pathname === '/causes' ? 'text-[#7FBF2F]' : 'text-white'}`}
           >
             Our Work
           </Link>
+
           <Link
             href="/stories"
-            className="px-4 h-full w-[87.2px] flex items-center duration-300 hover:text-[#7FBF2F] ${pathname === '/stories' ? 'text-[#7FBF2F]' : 'text-white'}"
+            className={`px-4 h-full w-[87.2px] flex items-center duration-300 hover:text-[#7FBF2F] 
+            ${pathname === '/stories' ? 'text-[#7FBF2F]' : 'text-white'}`}
           >
             Stories
           </Link>
+
           <Link
             href="/contact"
-            className="px-4 h-full w-[96.3px] flex items-center duration-300 hover:text-[#7FBF2F] ${pathname === '/contact' ? 'text-[#7FBF2F]' : 'text-white'}"
+            className={`px-4 h-full w-[96.3px] flex items-center duration-300 hover:text-[#7FBF2F] 
+            ${pathname === '/contact' ? 'text-[#7FBF2F]' : 'text-white'}`}
           >
             Contact
           </Link>
         </nav>
 
-        {/* Button */}
-        <div className="hidden md:flex items-center">
-          <Button className="bg-white text-[#2C3A04] text-[18px] px-6 py-4.5 rounded-b-sm  font-semibold transition-all duration-300 hover:bg-[#7FBF2F] hover:text-[#2C3A04] w-[111.66px] h-13.5">
-            Donate
-          </Button>
+        {/* Buttons */}
+        <div className="flex gap-4">
+          {user ? (
+            <Button className="bg-white text-[#2C3A04] text-[18px] px-6 py-4.5 rounded-b-sm  font-semibold transition-all duration-300 hover:bg-[#7FBF2F] hover:text-[#2C3A04] w-[111.66px] h-13.5">
+              Donate
+            </Button>
+          ) : (
+            <>
+              <Link href="/signin">
+                <button className="bg-[#7CB518] px-4 py-2 rounded">
+                  Sign In
+                </button>
+              </Link>
+
+              <Link href="/signup">
+                <button className="bg-[#7CB518] text-white px-4 py-2 rounded">
+                  Sign Up
+                </button>
+              </Link>
+            </>
+          )}
         </div>
 
-        {/* Mobile Button */}
+        {/* Mobile Menu Button */}
         <button
           onClick={() => setIsMenuOpen(!isMenuOpen)}
           className="md:hidden w-11 h-11 border border-white/70 rounded-[10px] flex items-center justify-center"
@@ -84,15 +119,19 @@ export function Header() {
             <Link href="/" onClick={() => setIsMenuOpen(false)}>
               Home
             </Link>
+
             <Link href="/about" onClick={() => setIsMenuOpen(false)}>
               About Us
             </Link>
+
             <Link href="/causes" onClick={() => setIsMenuOpen(false)}>
               Our Work
             </Link>
+
             <Link href="/stories" onClick={() => setIsMenuOpen(false)}>
               Stories
             </Link>
+
             <Link href="/contact" onClick={() => setIsMenuOpen(false)}>
               Contact
             </Link>
