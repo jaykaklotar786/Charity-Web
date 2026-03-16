@@ -41,11 +41,11 @@ export default function AboutSection() {
             </Button>
           </div>
           {/* Right Images */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-40">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-40">
             {/* Left Column */}
             <div className="flex flex-col gap-6">
               {/* Top Big */}
-              <div className="w-full md:w-77.5 h-85 rounded-3xl overflow-hidden">
+              <div className="w-full lg:w-77.5 h-85 rounded-3xl overflow-hidden">
                 <Image
                   src="/Images/home-0001.jpg"
                   alt=""
@@ -56,7 +56,7 @@ export default function AboutSection() {
               </div>
 
               {/* Bottom Small */}
-              <div className="w-full md:w-77.5 h-62.5 rounded-3xl overflow-hidden">
+              <div className="w-full lg:w-77.5 h-62.5 rounded-3xl overflow-hidden">
                 <Image
                   src="/Images/home-03.jpg"
                   alt=""
@@ -68,9 +68,9 @@ export default function AboutSection() {
             </div>
 
             {/* Right Column */}
-            <div className="flex flex-col gap-6 md:mt-24">
+            <div className="flex flex-col gap-6 lg:mt-24">
               {/* Top Small */}
-              <div className="w-full md:w-77.5 h-62.5 rounded-3xl overflow-hidden">
+              <div className="w-full lg:w-77.5 h-62.5 rounded-3xl overflow-hidden">
                 <Image
                   src="/Images/home-02.jpg"
                   alt=""
@@ -81,7 +81,7 @@ export default function AboutSection() {
               </div>
 
               {/* Bottom Big */}
-              <div className="w-full md:w-77.5 h-85 rounded-3xl overflow-hidden">
+              <div className="w-full lg:w-77.5 h-85 rounded-3xl overflow-hidden">
                 <Image
                   src="/Images/home-0004.jpg"
                   alt=""

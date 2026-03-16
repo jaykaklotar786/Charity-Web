@@ -5,7 +5,8 @@ import * as Yup from 'yup';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '@/lib/firebase';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { onAuthStateChanged } from 'firebase/auth';
 
 // Validation Schema
 const SigninSchema = Yup.object({
@@ -20,6 +21,16 @@ const SigninSchema = Yup.object({
 export default function Signin() {
   const router = useRouter();
   const [loginError, setLoginError] = useState('');
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        router.push('/');
+      }
+    });
+
+    return () => unsubscribe();
+  }, []);
 
   return (
     <div className="max-w-md mx-auto mt-32">
@@ -40,18 +51,15 @@ export default function Signin() {
               values.password,
             );
             router.push('/');
-          } catch (error) {
-            console.error('Login error:', error);
+          } catch (error: any) {
             if (error.code === 'auth/user-not-found') {
-              setLoginError('No account found with this email');
+              setLoginError('User does not exist');
             } else if (error.code === 'auth/wrong-password') {
               setLoginError('Incorrect password');
-            } else if (error.code === 'auth/invalid-email') {
-              setLoginError('Invalid email format');
-            } else if (error.code === 'auth/user-disabled') {
-              setLoginError('This account has been disabled');
+            } else if (error.code === 'auth/invalid-credential') {
+              setLoginError('User Not Found or Wrong Password');
             } else {
-              setLoginError('Failed to login. Please try again.');
+              setLoginError('Login failed. Please try again.');
             }
           } finally {
             setSubmitting(false);

@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { onAuthStateChanged } from 'firebase/auth';
+import { onAuthStateChanged, signOut } from 'firebase/auth';
 import { auth } from '@/lib/firebase';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -11,13 +11,15 @@ import { usePathname } from 'next/navigation';
 
 export function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
 
   const pathname = usePathname();
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
+      setLoading(false);
     });
 
     return () => unsubscribe();
@@ -37,11 +39,11 @@ export function Header() {
           />
         </Link>
 
-        {/* Menu */}
+        {/* Desktop Menu */}
         <nav className="hidden md:flex mr-9 items-center font-semibold h-full">
           <Link
             href="/"
-            className={`px-4 h-full w-[77.88px] flex items-center duration-300 hover:text-[#7FBF2F] 
+            className={`px-4 h-full flex items-center duration-300 hover:text-[#7FBF2F] 
             ${pathname === '/' ? 'text-[#7FBF2F]' : 'text-white'}`}
           >
             Home
@@ -49,7 +51,7 @@ export function Header() {
 
           <Link
             href="/about"
-            className={`px-4 h-full w-[103.58px] flex items-center duration-300 hover:text-[#7FBF2F] 
+            className={`px-4 h-full flex items-center duration-300 hover:text-[#7FBF2F] 
             ${pathname === '/about' ? 'text-[#7FBF2F]' : 'text-white'}`}
           >
             About Us
@@ -57,7 +59,7 @@ export function Header() {
 
           <Link
             href="/causes"
-            className={`px-4 h-full w-[105.69px] flex items-center duration-300 hover:text-[#7FBF2F] 
+            className={`px-4 h-full flex items-center duration-300 hover:text-[#7FBF2F] 
             ${pathname === '/causes' ? 'text-[#7FBF2F]' : 'text-white'}`}
           >
             Our Work
@@ -65,7 +67,7 @@ export function Header() {
 
           <Link
             href="/stories"
-            className={`px-4 h-full w-[87.2px] flex items-center duration-300 hover:text-[#7FBF2F] 
+            className={`px-4 h-full flex items-center duration-300 hover:text-[#7FBF2F] 
             ${pathname === '/stories' ? 'text-[#7FBF2F]' : 'text-white'}`}
           >
             Stories
@@ -73,19 +75,28 @@ export function Header() {
 
           <Link
             href="/contact"
-            className={`px-4 h-full w-[96.3px] flex items-center duration-300 hover:text-[#7FBF2F] 
+            className={`px-4 h-full flex items-center duration-300 hover:text-[#7FBF2F] 
             ${pathname === '/contact' ? 'text-[#7FBF2F]' : 'text-white'}`}
           >
             Contact
           </Link>
         </nav>
 
-        {/* Buttons */}
+        {/* Auth Buttons */}
         <div className="flex gap-4">
-          {user ? (
-            <Button className="bg-white text-[#2C3A04] text-[18px] px-6 py-4.5 rounded-b-sm  font-semibold transition-all duration-300 hover:bg-[#7FBF2F] hover:text-[#2C3A04] w-[111.66px] h-13.5">
-              Donate
-            </Button>
+          {loading ? null : user ? (
+            <>
+              <Button className="bg-white text-[#2C3A04] text-[18px] px-6 py-4.5 rounded-b-sm font-semibold transition-all duration-300 hover:bg-[#7FBF2F] hover:text-[#2C3A04] w-[111.66px] h-13.5">
+                Donate
+              </Button>
+
+              <button
+                onClick={() => signOut(auth)}
+                className="bg-[#7CB518] text-white px-4 py-2 rounded"
+              >
+                Logout
+              </button>
+            </>
           ) : (
             <>
               <Link href="/signin">
