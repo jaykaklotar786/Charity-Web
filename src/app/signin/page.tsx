@@ -25,6 +25,7 @@ export default function Signin() {
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
+        console.log('LOGIN UID:', auth.currentUser?.uid);
         router.push('/');
       }
     });

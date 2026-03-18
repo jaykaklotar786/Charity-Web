@@ -1,22 +1,22 @@
-// Import the functions you need from the SDKs
-import { initializeApp } from "firebase/app";
+// src/lib/firebase.ts
+
+import { initializeApp, getApps, getApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 
-// Firebase config
+// 🔥 Tera config (same rakha hai)
 const firebaseConfig = {
-  apiKey: "AIzaSyBxac1xsGHO9WrNFt75joVsvWKEhdWRoNA",
-  authDomain: "charity-app-98d1c.firebaseapp.com",
-  projectId: "charity-app-98d1c",
-  storageBucket: "charity-app-98d1c.firebasestorage.app",
-  messagingSenderId: "467341735066",
-  appId: "1:467341735066:web:ecffc044e4bd493ff99b23",
-  measurementId: "G-4Y14PLQ27Z"
+  apiKey: "AIzaSyClBCSy4vCfhmqrA-klPKnjrZ-4VF3-MAw",
+  authDomain: "charity-app-2-ca3c2.firebaseapp.com",
+  projectId: "charity-app-2-ca3c2",
+  storageBucket: "charity-app-2-ca3c2.firebasestorage.app",
+  messagingSenderId: "304770091011",
+  appId: "1:304770091011:web:3f1f50ef2294d45731a636"
 };
 
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
+// ✅ Next.js safe initialization (IMPORTANT)
+const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
 
-// Firebase services
+// ✅ EXPORTS (ye hi missing tha)
 export const auth = getAuth(app);
 export const db = getFirestore(app);

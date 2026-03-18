@@ -1,7 +1,11 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { isSignInWithEmailLink, signInWithEmailLink } from 'firebase/auth';
+import {
+  isSignInWithEmailLink,
+  signInWithEmailLink,
+  updatePassword,
+} from 'firebase/auth';
 import { auth, db } from '@/lib/firebase';
 import { doc, setDoc } from 'firebase/firestore';
 
@@ -13,25 +17,21 @@ export default function CompleteSignup() {
 
   useEffect(() => {
     const completeSignIn = async () => {
-      try {
-        if (isSignInWithEmailLink(auth, window.location.href)) {
-          let storedEmail = localStorage.getItem('emailForSignIn');
+      if (isSignInWithEmailLink(auth, window.location.href)) {
+        let storedEmail = localStorage.getItem('emailForSignIn');
 
-          if (!storedEmail) {
-            storedEmail = prompt('Enter your email');
-          }
-
-          setEmail(storedEmail);
-
-          await signInWithEmailLink(auth, storedEmail, window.location.href);
-
-          localStorage.removeItem('emailForSignIn');
+        if (!storedEmail) {
+          storedEmail = prompt('Enter your email');
         }
-      } catch (error) {
-        console.error('SIGNIN ERROR:', error);
-        alert(error.message);
-      } finally {
-        setLoading(false);
+
+        // ✅ Step 1: Sign in user
+        const result = await signInWithEmailLink(
+          auth,
+          storedEmail,
+          window.location.href,
+        );
+
+        console.log('User signed in:', result.user.uid);
       }
     };
 
@@ -47,21 +47,14 @@ export default function CompleteSignup() {
     try {
       const user = auth.currentUser;
 
-      if (!user) {
-        alert('User not found');
-        return;
-      }
+      // 🔥 IMPORTANT LINE
+      await updatePassword(user, password);
 
-      //  Save user in Firestore
-      await setDoc(doc(db, 'users', user.uid), {
-        email,
-        role: 'user',
-      });
+      alert('Password set successfully!');
 
-      alert('Account created!');
-      window.location.href = '/';
+      window.location.href = '/login';
     } catch (error) {
-      console.error('SAVE ERROR:', error);
+      console.error(error);
       alert(error.message);
     }
   };
