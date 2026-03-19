@@ -1,120 +1,300 @@
 'use client';
 
+import Link from 'next/link';
+import Image from 'next/image';
 import { useEffect, useState } from 'react';
-import { auth } from '@/lib/firebase';
+import { auth, db } from '@/lib/firebase';
 import { onAuthStateChanged } from 'firebase/auth';
 import { isAdmin } from '@/lib/adminCheck';
 import { useRouter } from 'next/navigation';
-import { collection, getDocs } from 'firebase/firestore';
-import { db } from '@/lib/firebase';
+import {
+  collection,
+  getDocs,
+  doc,
+  deleteDoc,
+  updateDoc,
+} from 'firebase/firestore';
 
 export default function AdminPage() {
   const router = useRouter();
+
   const [loading, setLoading] = useState(true);
-
+  const [activeTab, setActiveTab] = useState('users');
   const [users, setUsers] = useState([]);
-  const [selectedUser, setSelectedUser] = useState(null);
+  const [showInvite, setShowInvite] = useState(false);
+  const [email, setEmail] = useState('');
 
+  const [editUser, setEditUser] = useState(null);
+  const [editData, setEditData] = useState({
+    firstname: '',
+    lastname: '',
+    email: '',
+    mobile: '',
+  });
+
+  // ADMIN CHECK
   useEffect(() => {
-    async function fetchUsers() {
-      const querySnapshot = await getDocs(collection(db, 'users'));
-      const userList = querySnapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      }));
-      setUsers(userList);
-    }
-
-    fetchUsers();
-  }, []);
-
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (user) => {
-      if (!user) {
-        router.push('/');
-        return;
-      }
+    const unsub = onAuthStateChanged(auth, async (user) => {
+      if (!user) return router.push('/');
 
       const admin = await isAdmin(user.uid);
-
-      if (!admin) {
-        router.push('/');
-      }
+      if (!admin) return router.push('/');
 
       setLoading(false);
     });
 
-    return () => unsubscribe();
+    return () => unsub();
   }, []);
 
-  if (loading) return <p className="p-6">Loading...</p>;
+  // 📥 FETCH USERS
+  const fetchUsers = async () => {
+    const snap = await getDocs(collection(db, 'users'));
+    const list = snap.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
+    setUsers(list);
+  };
+
+  useEffect(() => {
+    fetchUsers();
+  }, []);
+
+  //  DELETE USER
+  const handleDelete = async (id) => {
+    await deleteDoc(doc(db, 'users', id));
+    fetchUsers();
+  };
+
+  //  ENABLE / DISABLE
+  const toggleDisable = async (user) => {
+    await updateDoc(doc(db, 'users', user.id), {
+      disabled: !user.disabled,
+    });
+    fetchUsers();
+  };
+
+  //  UPDATE USER
+  const handleUpdate = async () => {
+    await updateDoc(doc(db, 'users', editUser.id), {
+      firstname: editData.firstname,
+      lastname: editData.lastname,
+      mobile: editData.mobile,
+    });
+
+    setEditUser(null);
+    fetchUsers();
+  };
+
+  if (loading) return <p className="p-10">Checking admin...</p>;
 
   return (
-    <div className="flex h-screen bg-gray-100">
-      {/* LEFT SIDEBAR */}
-      <div className="w-70 bg-[#1e293b] text-white flex flex-col">
-        <div className="p-5 text-xl font-semibold border-b border-gray-700">
-          Users
-        </div>
+    <div className="flex min-h-screen bg-gray-100">
+      {/* SIDEBAR */}
+      <div className="w-64 bg-[#2C3A04] text-white p-6 flex flex-col">
+        <Link href="/" className="mb-10">
+          <Image
+            src="/Images/site-logo-white-2.svg"
+            alt="Charity Logo"
+            width={150}
+            height={38}
+          />
+        </Link>
 
-        <div className="flex-1 overflow-y-auto p-3 space-y-2">
-          {users.map((user) => (
-            <div
-              key={user.id}
-              onClick={() => setSelectedUser(user)}
-              className={`p-3 rounded-lg cursor-pointer transition 
-              ${
-                selectedUser?.id === user.id
-                  ? 'bg-[#334155]'
-                  : 'hover:bg-[#334155]'
-              }`}
-            >
-              <p className="text-sm font-medium">
-                {user.firstname} {user.lastname}
-              </p>
-              <p className="text-xs text-gray-400">{user.email}</p>
-            </div>
-          ))}
-        </div>
+        <button
+          onClick={() => setActiveTab('users')}
+          className={`p-2 rounded text-left transition ${
+            activeTab === 'users' ? 'bg-[#7CB518]' : 'hover:bg-[#3d4a22]'
+          }`}
+        >
+          Users
+        </button>
       </div>
 
       {/* RIGHT SIDE */}
-      <div className="flex-1 p-8">
-        {selectedUser ? (
-          <div className="bg-white rounded-2xl shadow-md p-6 max-w-xl">
-            <h2 className="text-2xl font-bold mb-4">
-              {selectedUser.firstname} {selectedUser.lastname}
-            </h2>
+      <div className="flex-1 p-6">
+        {/* TOP BAR */}
+        <div className="flex justify-between items-center mb-6">
+          <h2 className="text-2xl font-bold">Users</h2>
 
-            <div className="space-y-2 text-gray-700">
-              <p>
-                <span className="font-semibold">Email:</span>{' '}
-                {selectedUser.email}
-              </p>
-              <p>
-                <span className="font-semibold">Mobile:</span>{' '}
-                {selectedUser.mobile}
-              </p>
-              <p>
-                <span className="font-semibold">Role:</span>{' '}
-                <span className="px-2 py-1 text-xs bg-green-100 text-green-700 rounded-md">
-                  {selectedUser.role}
-                </span>
-              </p>
+          <button
+            onClick={() => setShowInvite(true)}
+            className="bg-[#7CB518] text-white px-4 py-2 rounded"
+          >
+            Invite User
+          </button>
+        </div>
+
+        {/* USERS TABLE */}
+        {activeTab === 'users' && (
+          <div className="bg-white rounded-xl shadow p-4">
+            <table className="w-full">
+              <thead>
+                <tr className="border-b text-left">
+                  <th className="py-2">Name</th>
+                  <th>Email</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+
+              <tbody>
+                {users.map((user) => (
+                  <tr key={user.id} className="border-b">
+                    <td className="py-2">
+                      {user.firstname} {user.lastname}
+                    </td>
+
+                    <td>{user.email}</td>
+
+                    <td className="flex gap-2 py-2">
+                      {/* EDIT */}
+                      <button
+                        onClick={() => {
+                          setEditUser(user);
+                          setEditData({
+                            firstname: user.firstname || '',
+                            lastname: user.lastname || '',
+                            email: user.email || '',
+                            mobile: user.mobile || '',
+                          });
+                        }}
+                        className="bg-blue-500 text-white px-3 py-1 rounded"
+                      >
+                        Edit
+                      </button>
+
+                      {/* DELETE */}
+                      <button
+                        onClick={() => handleDelete(user.id)}
+                        className="bg-red-500 text-white px-3 py-1 rounded"
+                      >
+                        Delete
+                      </button>
+
+                      {/* ENABLE/DISABLE */}
+                      <button
+                        onClick={() => toggleDisable(user)}
+                        className={`px-3 py-1 rounded text-white ${
+                          user.disabled ? 'bg-green-500' : 'bg-yellow-500'
+                        }`}
+                      >
+                        {user.disabled ? 'Enable' : 'Disable'}
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+
+        {/* INVITE MODAL */}
+        {showInvite && (
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center">
+            <div className="bg-white p-6 rounded w-96">
+              <h2 className="text-xl mb-4">Invite User</h2>
+
+              <input
+                type="email"
+                placeholder="Enter email"
+                className="border p-2 w-full mb-4"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
+
+              <div className="flex justify-between">
+                <button
+                  onClick={() => setShowInvite(false)}
+                  className="px-4 py-2 border rounded"
+                >
+                  Close
+                </button>
+
+                <button
+                  onClick={() => {
+                    alert('Invite logic here');
+                    setShowInvite(false);
+                  }}
+                  className="bg-[#7CB518] text-white px-4 py-2 rounded"
+                >
+                  Send Invite
+                </button>
+              </div>
             </div>
           </div>
-        ) : (
-          <div className="text-gray-500 text-lg">
-            Select a user from the left panel 👈
+        )}
+
+        {/* EDIT MODAL */}
+        {editUser && (
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center">
+            <div className="w-full max-w-md bg-white p-8 rounded-xl shadow-lg">
+              <h2 className="text-2xl font-bold mb-6 text-center">Edit User</h2>
+
+              <input
+                type="text"
+                placeholder="First Name"
+                className="border p-2 w-full mb-3 rounded"
+                value={editData.firstname}
+                onChange={(e) =>
+                  setEditData({
+                    ...editData,
+                    firstname: e.target.value,
+                  })
+                }
+              />
+
+              <input
+                type="text"
+                placeholder="Last Name"
+                className="border p-2 w-full mb-3 rounded"
+                value={editData.lastname}
+                onChange={(e) =>
+                  setEditData({
+                    ...editData,
+                    lastname: e.target.value,
+                  })
+                }
+              />
+
+              <input
+                type="email"
+                className="border p-2 w-full mb-3 rounded bg-gray-100"
+                value={editData.email}
+                disabled
+              />
+
+              <input
+                type="text"
+                placeholder="Mobile"
+                className="border p-2 w-full mb-4 rounded"
+                value={editData.mobile}
+                onChange={(e) =>
+                  setEditData({
+                    ...editData,
+                    mobile: e.target.value,
+                  })
+                }
+              />
+
+              <div className="flex gap-3">
+                <button
+                  onClick={() => setEditUser(null)}
+                  className="w-full border py-2 rounded"
+                >
+                  Cancel
+                </button>
+
+                <button
+                  onClick={handleUpdate}
+                  className="w-full bg-[#7CB518] text-white py-2 rounded"
+                >
+                  Save
+                </button>
+              </div>
+            </div>
           </div>
         )}
       </div>
-      <button
-        onClick={() => router.push('/admin/invite')}
-        className="bg-green-500 text-white px-4 py-2 w-1.50 absolute top-5 right-5 rounded-lg"
-      >
-        Invite User
-      </button>
     </div>
   );
 }

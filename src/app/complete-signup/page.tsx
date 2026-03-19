@@ -10,28 +10,48 @@ import { auth, db } from '@/lib/firebase';
 import { doc, setDoc } from 'firebase/firestore';
 
 export default function CompleteSignup() {
+  const [loading, setLoading] = useState(true);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const completeSignIn = async () => {
-      if (isSignInWithEmailLink(auth, window.location.href)) {
+      try {
+        if (!isSignInWithEmailLink(auth, window.location.href)) {
+          setLoading(false);
+          return;
+        }
+
         let storedEmail = localStorage.getItem('emailForSignIn');
 
         if (!storedEmail) {
           storedEmail = prompt('Enter your email');
         }
 
-        // ✅ Step 1: Sign in user
+        if (!storedEmail) {
+          alert('Email required');
+          setLoading(false);
+          return;
+        }
+
         const result = await signInWithEmailLink(
           auth,
           storedEmail,
           window.location.href,
         );
 
-        console.log('User signed in:', result.user.uid);
+        console.log('SIGNED IN:', result.user.uid);
+
+        setEmail(storedEmail);
+
+        // clear storage
+        localStorage.removeItem('emailForSignIn');
+      } catch (error) {
+        console.error('ERROR:', error);
+        alert('Link expired or invalid');
+      } finally {
+        setLoading(false); // 🔥 IMPORTANT
       }
     };
 
@@ -47,46 +67,57 @@ export default function CompleteSignup() {
     try {
       const user = auth.currentUser;
 
-      // 🔥 IMPORTANT LINE
       await updatePassword(user, password);
 
-      alert('Password set successfully!');
+      await setDoc(doc(db, 'users', user.uid), {
+        email,
+        role: 'user',
+      });
 
-      window.location.href = '/login';
+      alert('Account created!');
+
+      window.location.href = '/signin';
     } catch (error) {
       console.error(error);
-      alert(error.message);
+      alert('Error setting password');
     }
   };
 
-  if (loading) {
-    return <p className="p-10">Loading...</p>;
-  }
+  if (loading)
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <p>Loading...</p>
+      </div>
+    );
 
   return (
-    <div className="p-10 max-w-md mx-auto">
-      <h1 className="text-2xl mb-4 font-bold">Set Password</h1>
+    <div className="min-h-screen flex items-center justify-center">
+      <div className="w-full max-w-md bg-white p-8 rounded-xl shadow-lg">
+        <h1 className="text-2xl font-bold mb-6 text-center">
+          Set Your Password
+        </h1>
 
-      <input
-        type="password"
-        placeholder="Password"
-        className="border p-2 w-full mb-3 rounded"
-        onChange={(e) => setPassword(e.target.value)}
-      />
+        <input
+          type="password"
+          placeholder="Password"
+          className="border p-2 w-full mb-3 rounded"
+          onChange={(e) => setPassword(e.target.value)}
+        />
 
-      <input
-        type="password"
-        placeholder="Confirm Password"
-        className="border p-2 w-full mb-3 rounded"
-        onChange={(e) => setConfirmPassword(e.target.value)}
-      />
+        <input
+          type="password"
+          placeholder="Confirm Password"
+          className="border p-2 w-full mb-4 rounded"
+          onChange={(e) => setConfirmPassword(e.target.value)}
+        />
 
-      <button
-        onClick={handleSubmit}
-        className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 w-full rounded"
-      >
-        Create Account
-      </button>
+        <button
+          onClick={handleSubmit}
+          className="bg-[#7CB518] text-white w-full py-2 rounded hover:bg-[#6aa014]"
+        >
+          Create Account
+        </button>
+      </div>
     </div>
   );
 }
