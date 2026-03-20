@@ -7,6 +7,8 @@ import { auth } from '@/lib/firebase';
 import { useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
 import { onAuthStateChanged } from 'firebase/auth';
+import { doc, getDoc } from 'firebase/firestore';
+import { db } from '@/lib/firebase';
 
 // Validation Schema
 const SigninSchema = Yup.object({
@@ -46,11 +48,22 @@ export default function Signin() {
         onSubmit={async (values, { setSubmitting }) => {
           try {
             setLoginError('');
-            await signInWithEmailAndPassword(
+            const userCredential = await signInWithEmailAndPassword(
               auth,
               values.email,
               values.password,
             );
+
+            const uid = userCredential.user.uid;
+
+            //  FIRESTORE CHECK
+            const userDoc = await getDoc(doc(db, 'users', uid));
+
+            if (userDoc.exists() && userDoc.data().disabled) {
+              await auth.signOut(); // logout immediately
+              setLoginError('Your account has been disabled by admin');
+              return;
+            }
             router.push('/');
           } catch (error: any) {
             if (error.code === 'auth/user-not-found') {
@@ -121,7 +134,7 @@ export default function Signin() {
 
             {/* Optional: Sign Up Link */}
             <p className="text-center text-gray-600 mt-4">
-              Don't have an account?{' '}
+              Don&apos;t have an account?{' '}
               <button
                 type="button"
                 onClick={() => router.push('/signup')}
