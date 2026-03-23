@@ -53,6 +53,16 @@ export default function AdminLayout({ children }) {
         >
           Charity
         </Link>
+        <Link
+          href="/admin/Donates"
+          className={`p-2 rounded ${
+            pathname === '/admin/Donates'
+              ? 'bg-[#7CB518]'
+              : 'hover:bg-[#435520]'
+          }`}
+        >
+          Donations
+        </Link>
       </div>
 
       {/* CONTENT */}

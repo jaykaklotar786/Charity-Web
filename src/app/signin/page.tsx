@@ -5,10 +5,11 @@ import * as Yup from 'yup';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '@/lib/firebase';
 import { useRouter } from 'next/navigation';
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import { onAuthStateChanged } from 'firebase/auth';
 import { doc, getDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
+import { toast } from 'sonner';
 
 // Validation Schema
 const SigninSchema = Yup.object({
@@ -22,7 +23,6 @@ const SigninSchema = Yup.object({
 
 export default function Signin() {
   const router = useRouter();
-  const [loginError, setLoginError] = useState('');
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -47,7 +47,6 @@ export default function Signin() {
         validationSchema={SigninSchema}
         onSubmit={async (values, { setSubmitting }) => {
           try {
-            setLoginError('');
             const userCredential = await signInWithEmailAndPassword(
               auth,
               values.email,
@@ -61,19 +60,20 @@ export default function Signin() {
 
             if (userDoc.exists() && userDoc.data().disabled) {
               await auth.signOut(); // logout immediately
-              setLoginError('Your account has been disabled by admin');
+              toast.error('Your account has been disabled by admin');
               return;
             }
             router.push('/');
+            toast.success('Logged in successfully');
           } catch (error: any) {
             if (error.code === 'auth/user-not-found') {
-              setLoginError('User does not exist');
+              toast.error('User does not exist');
             } else if (error.code === 'auth/wrong-password') {
-              setLoginError('Incorrect password');
+              toast.error('Incorrect password');
             } else if (error.code === 'auth/invalid-credential') {
-              setLoginError('User Not Found or Wrong Password');
+              toast.error('User Not Found or Wrong Password');
             } else {
-              setLoginError('Login failed. Please try again.');
+              toast.error('Login failed. Please try again.');
             }
           } finally {
             setSubmitting(false);
@@ -115,13 +115,6 @@ export default function Signin() {
                 className="text-red-500 text-sm mt-1"
               />
             </div>
-
-            {/* Firebase Login Error */}
-            {loginError && (
-              <div className="text-red-500 text-sm text-center bg-red-50 p-2 rounded">
-                {loginError}
-              </div>
-            )}
 
             {/* Submit Button */}
             <button

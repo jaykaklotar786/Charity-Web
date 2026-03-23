@@ -15,6 +15,7 @@ import {
   updateDoc,
 } from 'firebase/firestore';
 import { sendSignInLinkToEmail } from 'firebase/auth';
+import { toast } from 'sonner';
 
 export default function AdminPage() {
   const router = useRouter();

@@ -4,6 +4,7 @@ import './globals.css';
 
 import './globals.css';
 import { cn } from '@/lib/utils';
+import { Toaster } from 'sonner';
 
 const dmSans = DM_Sans({
   subsets: ['latin'],
@@ -35,6 +36,7 @@ export default function RootLayout({
         )}
       >
         {children}
+        <Toaster richColors position="top-right" />
       </body>
     </html>
   );

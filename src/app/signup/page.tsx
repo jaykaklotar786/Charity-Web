@@ -10,6 +10,7 @@ import { auth, db } from '@/lib/firebase';
 import { doc, setDoc } from 'firebase/firestore';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
+import { toast } from 'sonner';
 
 const SignupSchema = Yup.object({
   firstname: Yup.string().required('First name required'),
@@ -24,7 +25,6 @@ const SignupSchema = Yup.object({
 
 export default function Signup() {
   const router = useRouter();
-  const [signupError, setSignupError] = useState('');
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -48,8 +48,6 @@ export default function Signup() {
     validationSchema: SignupSchema,
     onSubmit: async (values) => {
       try {
-        setSignupError('');
-
         const userCredential = await createUserWithEmailAndPassword(
           auth,
           values.email,
@@ -67,13 +65,13 @@ export default function Signup() {
         router.replace('/signin');
       } catch (error: any) {
         if (error.code === 'auth/email-already-in-use') {
-          setSignupError('User already exists. Please sign in.');
+          toast.error('User already exists. Please sign in.');
         } else if (error.code === 'auth/invalid-email') {
-          setSignupError('Invalid email format');
+          toast.error('Invalid email format');
         } else if (error.code === 'auth/weak-password') {
-          setSignupError('Password should be at least 6 characters');
+          toast.error('Password should be at least 6 characters');
         } else {
-          setSignupError('Signup failed. Please try again.');
+          toast.error('Signup failed. Please try again.');
         }
       }
     },
@@ -84,12 +82,6 @@ export default function Signup() {
       <h1 className="text-2xl font-bold mb-6">Sign Up</h1>
 
       <form onSubmit={formik.handleSubmit} className="flex flex-col gap-4">
-        {signupError && (
-          <div className="text-red-500 text-sm text-center bg-red-50 p-2 rounded">
-            {signupError}
-          </div>
-        )}
-
         {/* First Name */}
         <div>
           <input

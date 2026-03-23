@@ -1,56 +1,75 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { db } from '@/lib/firebase';
-import { collection, addDoc } from 'firebase/firestore';
+import {
+  collection,
+  addDoc,
+  getDocs,
+  serverTimestamp,
+} from 'firebase/firestore';
 
 export default function CharityPage() {
-  const [charityName, setCharityName] = useState('');
-  const [loading, setLoading] = useState(false);
+  const [name, setName] = useState('');
+  const [charities, setCharities] = useState([]);
 
-  const handleAddCharity = async () => {
-    if (!charityName) {
-      alert('Enter charity name');
-      return;
-    }
+  //  Fetch charities
+  const fetchCharities = async () => {
+    const snap = await getDocs(collection(db, 'charities'));
+    const list = snap.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
+    setCharities(list);
+  };
 
-    try {
-      setLoading(true);
+  useEffect(() => {
+    fetchCharities();
+  }, []);
 
-      await addDoc(collection(db, 'charities'), {
-        name: charityName,
-        createdAt: new Date(),
-      });
+  //  Add charity
+  const handleAdd = async () => {
+    if (!name) return alert('Enter charity name');
 
-      alert('Charity added!');
-      setCharityName('');
-    } catch (err) {
-      console.error(err);
-      alert('Error adding charity');
-    } finally {
-      setLoading(false);
-    }
+    await addDoc(collection(db, 'charities'), {
+      name,
+      createdAt: serverTimestamp(),
+    });
+
+    setName('');
+    fetchCharities();
   };
 
   return (
-    <div className="max-w-md bg-white p-6 rounded-xl shadow justify-center items-center mx-auto">
-      <h2 className="text-2xl font-bold mb-4">Add Charity</h2>
+    <div>
+      <h2 className="text-2xl mb-4 font-bold">Add Charity</h2>
 
-      <input
-        type="text"
-        placeholder="Enter charity name"
-        className="border p-2 w-full mb-4 rounded"
-        value={charityName}
-        onChange={(e) => setCharityName(e.target.value)}
-      />
+      <div className="flex gap-2 mb-6">
+        <input
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          placeholder="Charity name"
+          className="border p-2 rounded w-64"
+        />
 
-      <button
-        onClick={handleAddCharity}
-        disabled={loading}
-        className="bg-[#7CB518] text-white px-4 py-2 rounded w-full"
-      >
-        {loading ? 'Adding...' : 'Add Charity'}
-      </button>
+        <button
+          onClick={handleAdd}
+          className="bg-green-600 text-white px-4 rounded"
+        >
+          Add
+        </button>
+      </div>
+
+      {/* LIST */}
+      <div className="bg-white p-4 rounded shadow">
+        <h3 className="mb-2 font-semibold">Charities List</h3>
+
+        {charities.map((c) => (
+          <div key={c.id} className="border-b py-2">
+            {c.name}
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
