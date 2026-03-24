@@ -3,14 +3,17 @@
 import { useState } from 'react';
 import { sendSignInLinkToEmail } from 'firebase/auth';
 import { auth } from '@/lib/firebase';
+import { toast } from 'sonner';
 
 export default function InvitePage() {
   const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
 
   const sendInvite = async () => {
-    if (!email) {
-      alert('Enter email');
+    const trimmedEmail = email.trim();
+
+    if (!trimmedEmail) {
+      toast.error('Please enter an email address');
       return;
     }
 
@@ -22,19 +25,23 @@ export default function InvitePage() {
         handleCodeInApp: true,
       };
 
-      await sendSignInLinkToEmail(auth, email, actionCodeSettings);
+      await sendSignInLinkToEmail(auth, trimmedEmail, actionCodeSettings);
 
-      localStorage.setItem('emailForSignIn', email);
+      localStorage.setItem('emailForSignIn', trimmedEmail);
 
-      alert('Invite sent!');
+      toast.success('Invite sent! Please check your email.');
       setEmail('');
-    } catch (error) {
+    } catch (error: any) {
       console.error(error);
 
       if (error.code === 'auth/quota-exceeded') {
-        alert('Daily email limit exceeded');
+        toast.error('Invite quota exceeded. Try later.');
+      } else if (error.code === 'auth/invalid-email') {
+        toast.error('Invalid email address');
+      } else if (error.code === 'auth/missing-email') {
+        toast.error('Email is required');
       } else {
-        alert('Error sending invite');
+        toast.error('Something went wrong');
       }
     } finally {
       setLoading(false);

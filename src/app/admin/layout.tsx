@@ -65,7 +65,6 @@ export default function AdminLayout({ children }) {
         </Link>
       </div>
 
-      {/* CONTENT */}
       <div className="flex-1 p-6">{children}</div>
     </div>
   );

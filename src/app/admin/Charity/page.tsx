@@ -8,19 +8,24 @@ import {
   getDocs,
   serverTimestamp,
 } from 'firebase/firestore';
+import { toast } from 'sonner';
+import Loader from '@/components/Loader';
 
 export default function CharityPage() {
   const [name, setName] = useState('');
   const [charities, setCharities] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   //  Fetch charities
   const fetchCharities = async () => {
+    setLoading(true);
     const snap = await getDocs(collection(db, 'charities'));
     const list = snap.docs.map((doc) => ({
       id: doc.id,
       ...doc.data(),
     }));
     setCharities(list);
+    setLoading(false);
   };
 
   useEffect(() => {
@@ -29,7 +34,7 @@ export default function CharityPage() {
 
   //  Add charity
   const handleAdd = async () => {
-    if (!name) return alert('Enter charity name');
+    if (!name) return toast.error('Please enter a charity name');
 
     await addDoc(collection(db, 'charities'), {
       name,
@@ -59,6 +64,16 @@ export default function CharityPage() {
           Add
         </button>
       </div>
+
+      {loading ? (
+        <Loader />
+      ) : (
+        charities.map((c) => (
+          <div key={c.id} className="border-b py-2">
+            {c.name}
+          </div>
+        ))
+      )}
 
       {/* LIST */}
       <div className="bg-white p-4 rounded shadow">

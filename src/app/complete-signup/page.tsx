@@ -8,6 +8,7 @@ import {
 } from 'firebase/auth';
 import { auth, db } from '@/lib/firebase';
 import { doc, setDoc } from 'firebase/firestore';
+import { toast } from 'sonner';
 
 export default function CompleteSignup() {
   const [loading, setLoading] = useState(true);
@@ -30,7 +31,7 @@ export default function CompleteSignup() {
         }
 
         if (!storedEmail) {
-          alert('Email required');
+          toast.error('Email is required to complete signup');
           setLoading(false);
           return;
         }
@@ -49,7 +50,7 @@ export default function CompleteSignup() {
         localStorage.removeItem('emailForSignIn');
       } catch (error) {
         console.error('ERROR:', error);
-        alert('Link expired or invalid');
+        toast.error('Failed to complete signup. Please try again.');
       } finally {
         setLoading(false); // 🔥 IMPORTANT
       }
@@ -60,7 +61,7 @@ export default function CompleteSignup() {
 
   const handleSubmit = async () => {
     if (password !== confirmPassword) {
-      alert('Passwords do not match');
+      toast.error('Passwords do not match');
       return;
     }
 
@@ -74,12 +75,12 @@ export default function CompleteSignup() {
         role: 'user',
       });
 
-      alert('Account created!');
+      toast.success('Account created successfully! Please sign in.');
 
       window.location.href = '/signin';
     } catch (error) {
       console.error(error);
-      alert('Error setting password');
+      toast.error('Error setting password');
     }
   };
 
