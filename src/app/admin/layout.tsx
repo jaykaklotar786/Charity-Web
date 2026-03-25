@@ -37,7 +37,7 @@ export default function AdminLayout({ children }) {
         </Link>
         <Link
           href="/admin/users"
-          className={`p-2 rounded mb-2 ${
+          className={`p-2 rounded mb-3 ${
             pathname === '/admin/users' ? 'bg-[#7CB518]' : 'hover:bg-[#3d4a22]'
           }`}
         >
@@ -45,7 +45,7 @@ export default function AdminLayout({ children }) {
         </Link>
         <Link
           href="/admin/Charity"
-          className={`p-2 rounded ${
+          className={`p-2 rounded mb-3 ${
             pathname === '/admin/Charity'
               ? 'bg-[#7CB518]'
               : 'hover:bg-[#3d4a22]'
@@ -55,7 +55,7 @@ export default function AdminLayout({ children }) {
         </Link>
         <Link
           href="/admin/Donates"
-          className={`p-2 rounded ${
+          className={`p-2 rounded  ${
             pathname === '/admin/Donates'
               ? 'bg-[#7CB518]'
               : 'hover:bg-[#435520]'

@@ -5,6 +5,7 @@ import './globals.css';
 import './globals.css';
 import { cn } from '@/lib/utils';
 import { Toaster } from 'sonner';
+import Script from 'next/script';
 
 const dmSans = DM_Sans({
   subsets: ['latin'],
@@ -29,6 +30,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <head>
+        <Script
+          src="https://checkout.razorpay.com/v1/checkout.js"
+          strategy="lazyOnload"
+        />
+      </head>
       <body
         className={cn(
           `${dmSans.variable} ${sansSarif.variable} relative`,

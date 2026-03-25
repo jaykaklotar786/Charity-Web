@@ -21,6 +21,13 @@ import { toast } from 'sonner';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 
+// ✅ Loader Component
+const Loader = () => (
+  <div className="flex justify-center items-center py-10">
+    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#7CB518]"></div>
+  </div>
+);
+
 export default function AdminPage() {
   const router = useRouter();
 
@@ -28,6 +35,10 @@ export default function AdminPage() {
   const [activeTab, setActiveTab] = useState('users');
   const [users, setUsers] = useState<any[]>([]);
   const [showInvite, setShowInvite] = useState(false);
+  const [fetchingUsers, setFetchingUsers] = useState(false);
+  const [deletingUser, setDeletingUser] = useState<string | null>(null);
+  const [updatingUser, setUpdatingUser] = useState(false);
+  const [sendingInvite, setSendingInvite] = useState(false);
 
   const [editUser, setEditUser] = useState<any>(null);
   const [editData, setEditData] = useState({
@@ -53,12 +64,20 @@ export default function AdminPage() {
 
   // 👥 FETCH USERS
   const fetchUsers = async () => {
-    const snap = await getDocs(collection(db, 'users'));
-    const list = snap.docs.map((doc) => ({
-      id: doc.id,
-      ...doc.data(),
-    }));
-    setUsers(list);
+    setFetchingUsers(true);
+    try {
+      const snap = await getDocs(collection(db, 'users'));
+      const list = snap.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+      setUsers(list);
+    } catch (error) {
+      console.error('Error fetching users:', error);
+      toast.error('Failed to fetch users');
+    } finally {
+      setFetchingUsers(false);
+    }
   };
 
   useEffect(() => {
@@ -67,31 +86,55 @@ export default function AdminPage() {
 
   // ❌ DELETE USER
   const handleDelete = async (id: string) => {
-    await deleteDoc(doc(db, 'users', id));
-    toast.success('User deleted');
-    fetchUsers();
+    setDeletingUser(id);
+    try {
+      await deleteDoc(doc(db, 'users', id));
+      toast.success('User deleted');
+      await fetchUsers();
+    } catch (error) {
+      console.error('Error deleting user:', error);
+      toast.error('Failed to delete user');
+    } finally {
+      setDeletingUser(null);
+    }
   };
 
   // 🔁 ENABLE / DISABLE
   const toggleDisable = async (user: any) => {
-    await updateDoc(doc(db, 'users', user.id), {
-      disabled: !user.disabled,
-    });
-    toast.success('User updated');
-    fetchUsers();
+    setUpdatingUser(true);
+    try {
+      await updateDoc(doc(db, 'users', user.id), {
+        disabled: !user.disabled,
+      });
+      toast.success('User updated');
+      await fetchUsers();
+    } catch (error) {
+      console.error('Error updating user:', error);
+      toast.error('Failed to update user');
+    } finally {
+      setUpdatingUser(false);
+    }
   };
 
   // ✏️ UPDATE USER
   const handleUpdate = async () => {
-    await updateDoc(doc(db, 'users', editUser.id), {
-      firstname: editData.firstname,
-      lastname: editData.lastname,
-      mobile: editData.mobile,
-    });
+    setUpdatingUser(true);
+    try {
+      await updateDoc(doc(db, 'users', editUser.id), {
+        firstname: editData.firstname,
+        lastname: editData.lastname,
+        mobile: editData.mobile,
+      });
 
-    toast.success('User updated successfully');
-    setEditUser(null);
-    fetchUsers();
+      toast.success('User updated successfully');
+      setEditUser(null);
+      await fetchUsers();
+    } catch (error) {
+      console.error('Error updating user:', error);
+      toast.error('Failed to update user');
+    } finally {
+      setUpdatingUser(false);
+    }
   };
 
   // ✅ FORMik (Invite)
@@ -103,6 +146,7 @@ export default function AdminPage() {
       email: Yup.string().email('Invalid email').required('Email is required'),
     }),
     onSubmit: async (values, { resetForm }) => {
+      setSendingInvite(true);
       try {
         const actionCodeSettings = {
           url: 'http://localhost:3000/complete-signup',
@@ -131,6 +175,8 @@ export default function AdminPage() {
         } else {
           toast.error('Failed to send invite');
         }
+      } finally {
+        setSendingInvite(false);
       }
     },
   });
@@ -154,6 +200,7 @@ export default function AdminPage() {
     }),
 
     onSubmit: async (values) => {
+      setUpdatingUser(true);
       try {
         await updateDoc(doc(db, 'users', editUser.id), {
           firstname: values.firstname,
@@ -163,15 +210,23 @@ export default function AdminPage() {
 
         toast.success('User updated successfully');
         setEditUser(null);
-        fetchUsers();
+        await fetchUsers();
       } catch (error) {
         console.log(error);
         toast.error('Update failed');
+      } finally {
+        setUpdatingUser(false);
       }
     },
   });
 
-  if (loading) return <p className="p-10">Checking admin...</p>;
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#7CB518]"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex min-h-screen bg-gray-100">
@@ -182,7 +237,7 @@ export default function AdminPage() {
 
           <button
             onClick={() => setShowInvite(true)}
-            className="bg-[#7CB518] text-white px-4 py-2 rounded"
+            className="bg-[#7CB518] text-white px-4 py-2 rounded hover:bg-[#6a9e14] transition-colors"
           >
             Invite User
           </button>
@@ -191,65 +246,85 @@ export default function AdminPage() {
         {/* USERS TABLE */}
         {activeTab === 'users' && (
           <div className="bg-white rounded-xl shadow p-4">
-            <table className="w-full">
-              <thead>
-                <tr className="border-b text-left">
-                  <th className="py-2">Name</th>
-                  <th>Email</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-
-              <tbody>
-                {users.map((user: any) => (
-                  <tr key={user.id} className="border-b">
-                    <td className="py-2">
-                      {user.firstname} {user.lastname}
-                    </td>
-
-                    <td>{user.email}</td>
-
-                    <td className="flex gap-2 py-2">
-                      <button
-                        onClick={() => {
-                          setEditUser(user);
-                          setEditData({
-                            firstname: user.firstname || '',
-                            lastname: user.lastname || '',
-                            email: user.email || '',
-                            mobile: user.mobile || '',
-                          });
-                        }}
-                        className="bg-blue-500 text-white px-3 py-1 rounded"
-                      >
-                        Edit
-                      </button>
-
-                      <button
-                        onClick={() => handleDelete(user.id)}
-                        className="bg-red-500 text-white px-3 py-1 rounded"
-                      >
-                        Delete
-                      </button>
-
-                      <button
-                        onClick={() => toggleDisable(user)}
-                        className={`px-3 py-1 rounded text-white ${
-                          user.disabled ? 'bg-green-500' : 'bg-yellow-500'
-                        }`}
-                      >
-                        {user.disabled ? 'Enable' : 'Disable'}
-                      </button>
-                    </td>
+            {fetchingUsers ? (
+              <Loader />
+            ) : (
+              <table className="w-full">
+                <thead>
+                  <tr className="border-b text-left">
+                    <th className="py-2">Name</th>
+                    <th>Email</th>
+                    <th>Actions</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+
+                <tbody>
+                  {users.map((user: any) => (
+                    <tr key={user.id} className="border-b">
+                      <td className="py-2">
+                        {user.firstname} {user.lastname}
+                      </td>
+
+                      <td>{user.email}</td>
+
+                      <td className="flex gap-2 py-2">
+                        <button
+                          onClick={() => {
+                            setEditUser(user);
+                            setEditData({
+                              firstname: user.firstname || '',
+                              lastname: user.lastname || '',
+                              email: user.email || '',
+                              mobile: user.mobile || '',
+                            });
+                          }}
+                          className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600 transition-colors"
+                          disabled={updatingUser}
+                        >
+                          Edit
+                        </button>
+
+                        <button
+                          onClick={() => handleDelete(user.id)}
+                          className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 transition-colors"
+                          disabled={deletingUser === user.id}
+                        >
+                          {deletingUser === user.id ? (
+                            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                          ) : (
+                            'Delete'
+                          )}
+                        </button>
+
+                        <button
+                          onClick={() => toggleDisable(user)}
+                          className={`px-3 py-1 rounded text-white transition-colors ${
+                            user.disabled
+                              ? 'bg-green-500 hover:bg-green-600'
+                              : 'bg-yellow-500 hover:bg-yellow-600'
+                          }`}
+                          disabled={updatingUser}
+                        >
+                          {updatingUser ? (
+                            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                          ) : user.disabled ? (
+                            'Enable'
+                          ) : (
+                            'Disable'
+                          )}
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
           </div>
         )}
 
+        {/* INVITE MODAL */}
         {showInvite && (
-          <div className="fixed inset-0 bg-black/50 flex items-center justify-center">
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
             <div className="bg-white p-6 rounded w-96">
               <h2 className="text-xl mb-4">Invite User</h2>
 
@@ -258,10 +333,11 @@ export default function AdminPage() {
                   type="email"
                   name="email"
                   placeholder="Enter email"
-                  className="border p-2 w-full mb-2"
+                  className="border p-2 w-full mb-2 rounded"
                   value={formik.values.email}
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
+                  disabled={sendingInvite}
                 />
 
                 {formik.touched.email && formik.errors.email && (
@@ -270,20 +346,25 @@ export default function AdminPage() {
                   </p>
                 )}
 
-                <div className="flex justify-between">
+                <div className="flex justify-between gap-3">
                   <button
                     type="button"
                     onClick={() => setShowInvite(false)}
-                    className="px-4 py-2 border rounded"
+                    className="px-4 py-2 border rounded hover:bg-gray-50 transition-colors"
+                    disabled={sendingInvite}
                   >
                     Close
                   </button>
 
                   <button
                     type="submit"
-                    className="bg-[#7CB518] text-white px-4 py-2 rounded"
+                    className="bg-[#7CB518] text-white px-4 py-2 rounded hover:bg-[#6a9e14] transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                    disabled={sendingInvite}
                   >
-                    Send Invite
+                    {sendingInvite && (
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                    )}
+                    {sendingInvite ? 'Sending...' : 'Send Invite'}
                   </button>
                 </div>
               </form>
@@ -293,7 +374,7 @@ export default function AdminPage() {
 
         {/* ✏️ EDIT MODAL */}
         {editUser && (
-          <div className="fixed inset-0 bg-black/50 flex items-center justify-center">
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
             <div className="w-full max-w-md bg-white p-8 rounded-xl shadow-lg">
               <h2 className="text-2xl font-bold mb-6 text-center">Edit User</h2>
 
@@ -306,6 +387,7 @@ export default function AdminPage() {
                   value={editFormik.values.firstname}
                   onChange={editFormik.handleChange}
                   onBlur={editFormik.handleBlur}
+                  disabled={updatingUser}
                 />
 
                 {editFormik.touched.firstname &&
@@ -323,6 +405,7 @@ export default function AdminPage() {
                   value={editFormik.values.lastname}
                   onChange={editFormik.handleChange}
                   onBlur={editFormik.handleBlur}
+                  disabled={updatingUser}
                 />
 
                 {editFormik.touched.lastname && editFormik.errors.lastname && (
@@ -346,6 +429,7 @@ export default function AdminPage() {
                   value={editFormik.values.mobile}
                   onChange={editFormik.handleChange}
                   onBlur={editFormik.handleBlur}
+                  disabled={updatingUser}
                 />
 
                 {editFormik.touched.mobile && editFormik.errors.mobile && (
@@ -358,16 +442,21 @@ export default function AdminPage() {
                   <button
                     type="button"
                     onClick={() => setEditUser(null)}
-                    className="w-full border py-2 rounded"
+                    className="w-full border py-2 rounded hover:bg-gray-50 transition-colors"
+                    disabled={updatingUser}
                   >
                     Cancel
                   </button>
 
                   <button
                     type="submit"
-                    className="w-full bg-[#7CB518] text-white py-2 rounded"
+                    className="w-full bg-[#7CB518] text-white py-2 rounded hover:bg-[#6a9e14] transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                    disabled={updatingUser}
                   >
-                    Save
+                    {updatingUser && (
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                    )}
+                    {updatingUser ? 'Saving...' : 'Save'}
                   </button>
                 </div>
               </form>

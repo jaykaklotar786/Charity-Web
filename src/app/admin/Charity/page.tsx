@@ -16,7 +16,7 @@ export default function CharityPage() {
   const [charities, setCharities] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  //  Fetch charities
+  // Fetch charities
   const fetchCharities = async () => {
     setLoading(true);
     const snap = await getDocs(collection(db, 'charities'));
@@ -32,7 +32,7 @@ export default function CharityPage() {
     fetchCharities();
   }, []);
 
-  //  Add charity
+  // Add charity
   const handleAdd = async () => {
     if (!name) return toast.error('Please enter a charity name');
 
@@ -46,7 +46,7 @@ export default function CharityPage() {
   };
 
   return (
-    <div>
+    <>
       <h2 className="text-2xl mb-4 font-bold">Add Charity</h2>
 
       <div className="flex gap-2 mb-6">
@@ -68,23 +68,15 @@ export default function CharityPage() {
       {loading ? (
         <Loader />
       ) : (
-        charities.map((c) => (
-          <div key={c.id} className="border-b py-2">
-            {c.name}
-          </div>
-        ))
+        <div className="bg-white p-4 rounded shadow">
+          <h3 className="mb-2 font-semibold">Charities List</h3>
+          {charities.map((c) => (
+            <div key={c.id} className="border-b py-2">
+              {c.name}
+            </div>
+          ))}
+        </div>
       )}
-
-      {/* LIST */}
-      <div className="bg-white p-4 rounded shadow">
-        <h3 className="mb-2 font-semibold">Charities List</h3>
-
-        {charities.map((c) => (
-          <div key={c.id} className="border-b py-2">
-            {c.name}
-          </div>
-        ))}
-      </div>
-    </div>
+    </>
   );
 }
