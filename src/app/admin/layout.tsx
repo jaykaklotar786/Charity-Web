@@ -24,7 +24,7 @@ export default function AdminLayout({ children }) {
   }, []);
 
   return (
-    <div className="flex min-h-screen bg-gray-100">
+    <div className="flex h-screen bg-gray-100">
       {/* SIDEBAR */}
       <div className="w-64 bg-[#628309] text-white p-6 flex flex-col">
         <Link href="/" className="mb-10">
@@ -65,7 +65,7 @@ export default function AdminLayout({ children }) {
         </Link>
       </div>
 
-      <div className="flex-1 p-6">{children}</div>
+      <div className="flex-1 p-6 overflow-y-auto">{children}</div>
     </div>
   );
 }

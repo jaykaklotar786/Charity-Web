@@ -19,7 +19,7 @@ export default function Counter({
   const [startCounter, setStartCounter] = useState(false);
   const counterRef = useRef<HTMLSpanElement>(null);
 
-  // 👇 detect when counter comes into view
+  // detect when counter comes into view
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
@@ -41,7 +41,7 @@ export default function Counter({
     };
   }, []);
 
-  // 👇 counter logic
+  //  counter logic
   useEffect(() => {
     if (!startCounter) return;
 
