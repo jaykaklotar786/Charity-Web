@@ -1,47 +1,47 @@
-// components/DonateModal.jsx (Updated)
 'use client';
 
 import { useEffect, useState } from 'react';
-import { db, auth } from '@/lib/firebase';
-import { collection, getDocs } from 'firebase/firestore';
+import { db } from '@/lib/firebase';
+import {
+  collection,
+  getDocs,
+  DocumentData,
+  QueryDocumentSnapshot,
+  Timestamp,
+} from 'firebase/firestore';
 import { toast } from 'sonner';
+import Loader from '@/components/Loader';
 import RazorpayPayment from './RazorpayPayment';
 
-// Loader Component
-const Loader = ({ size = 'sm' }) => {
-  const sizeClasses = {
-    sm: 'h-4 w-4',
-    md: 'h-6 w-6',
-    lg: 'h-8 w-8',
-  };
+interface Charity {
+  id: string;
+  name: string;
+  createdAt?: Timestamp;
+}
 
-  return (
-    <div className="flex justify-center items-center">
-      <div
-        className={`${sizeClasses[size]} animate-spin rounded-full border-2 border-gray-200 border-t-green-600`}
-      ></div>
-    </div>
-  );
-};
+interface DonateModalProps {
+  onClose: () => void;
+}
 
-export default function DonateModal({ onClose }) {
-  const [charities, setCharities] = useState([]);
-  const [amount, setAmount] = useState('');
-  const [selectedCharity, setSelectedCharity] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [fetchingCharities, setFetchingCharities] = useState(true);
-  const [showPayment, setShowPayment] = useState(false);
+export default function DonateModal({ onClose }: DonateModalProps) {
+  const [charities, setCharities] = useState<Charity[]>([]);
+  const [amount, setAmount] = useState<string>('');
+  const [selectedCharity, setSelectedCharity] = useState<string>('');
+  const [loading, setLoading] = useState<boolean>(false);
+  const [fetchingCharities, setFetchingCharities] = useState<boolean>(true);
+  const [showPayment, setShowPayment] = useState<boolean>(false);
 
-  // Load charities
   useEffect(() => {
-    const fetchCharities = async () => {
+    const fetchCharities = async (): Promise<void> => {
       setFetchingCharities(true);
       try {
         const snap = await getDocs(collection(db, 'charities'));
-        const list = snap.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        }));
+        const list: Charity[] = snap.docs.map(
+          (doc: QueryDocumentSnapshot<DocumentData>) => ({
+            id: doc.id,
+            ...doc.data(),
+          }),
+        ) as Charity[];
         setCharities(list);
       } catch (error) {
         console.error('Error fetching charities:', error);
@@ -54,7 +54,7 @@ export default function DonateModal({ onClose }) {
     fetchCharities();
   }, []);
 
-  const handleProceedToPayment = () => {
+  const handleProceedToPayment = (): void => {
     if (!amount) {
       toast.error('Please enter an amount');
       return;
@@ -74,32 +74,58 @@ export default function DonateModal({ onClose }) {
     setShowPayment(true);
   };
 
-  const handlePaymentSuccess = () => {
+  const handlePaymentSuccess = (): void => {
     setAmount('');
     setSelectedCharity('');
     setShowPayment(false);
+    toast.success('Donation completed successfully! 🎉');
   };
 
-  const selectedCharityName = charities.find(
-    (c) => c.id === selectedCharity,
+  const selectedCharityName: string | undefined = charities.find(
+    (c: Charity) => c.id === selectedCharity,
   )?.name;
+
+  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>): void => {
+    if (e.key === 'Enter' && !showPayment && !loading) {
+      handleProceedToPayment();
+    }
+  };
 
   return (
     <div
       className="fixed inset-0 bg-black/50 flex justify-center items-center z-[999]"
-      onClick={(e) => {
+      onClick={(e: React.MouseEvent<HTMLDivElement>) => {
         if (e.target === e.currentTarget) onClose();
       }}
     >
       <div className="relative z-50">
         <div className="bg-white p-6 rounded-xl w-96 relative shadow-xl">
-          <h2 className="text-xl font-bold mb-4">
-            {showPayment ? 'Complete Payment' : 'Make a Donation'}
-          </h2>
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-xl font-bold text-gray-900">
+              {showPayment ? 'Complete Payment' : 'Make a Donation'}
+            </h2>
+            <button
+              onClick={onClose}
+              className="text-gray-400 hover:text-gray-600 transition-colors"
+            >
+              <svg
+                className="w-6 h-6"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M6 18L18 6M6 6l12 12"
+                />
+              </svg>
+            </button>
+          </div>
 
           {!showPayment ? (
             <>
-              {/* Amount Input */}
               <div className="mb-3">
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Amount (₹)
@@ -107,21 +133,23 @@ export default function DonateModal({ onClose }) {
                 <input
                   type="number"
                   placeholder="Enter amount"
-                  className="border p-2 w-full rounded focus:outline-none focus:ring-2 focus:ring-green-500"
+                  className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
                   value={amount}
-                  onChange={(e) => setAmount(e.target.value)}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                    setAmount(e.target.value)
+                  }
+                  onKeyPress={handleKeyPress}
                   disabled={loading}
                   autoFocus
                 />
               </div>
 
-              {/* Charity Selection */}
               <div className="mb-4">
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Select Charity
                 </label>
                 {fetchingCharities ? (
-                  <div className="border p-2 rounded bg-gray-50 flex justify-center items-center gap-2">
+                  <div className="border border-gray-300 p-2 rounded-lg bg-gray-50 flex justify-center items-center gap-2">
                     <Loader size="sm" />
                     <span className="text-sm text-gray-500">
                       Loading charities...
@@ -129,20 +157,21 @@ export default function DonateModal({ onClose }) {
                   </div>
                 ) : (
                   <select
-                    className="border p-2 w-full rounded focus:outline-none focus:ring-2 focus:ring-green-500"
+                    className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
                     value={selectedCharity}
-                    onChange={(e) => setSelectedCharity(e.target.value)}
+                    onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
+                      setSelectedCharity(e.target.value)
+                    }
                     disabled={loading}
                   >
                     <option value="">Select Charity</option>
-                    {charities.map((c) => (
+                    {charities.map((c: Charity) => (
                       <option key={c.id} value={c.id}>
                         {c.name}
                       </option>
                     ))}
                   </select>
                 )}
-
                 {!fetchingCharities && charities.length === 0 && (
                   <p className="text-sm text-red-500 mt-1">
                     No charities available. Please try again later.
@@ -150,18 +179,16 @@ export default function DonateModal({ onClose }) {
                 )}
               </div>
 
-              {/* Action Buttons */}
               <div className="flex gap-2">
                 <button
                   onClick={onClose}
-                  className="w-full border py-2 rounded hover:bg-gray-50 transition-colors"
+                  className="flex-1 border border-gray-300 py-2.5 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors"
                 >
                   Cancel
                 </button>
-
                 <button
                   onClick={handleProceedToPayment}
-                  className="w-full bg-green-600 text-white py-2 rounded hover:bg-green-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="flex-1 bg-linear-to-r from-green-600 to-green-500 text-white py-2.5 rounded-lg hover:from-green-700 hover:to-green-600 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
                   disabled={
                     fetchingCharities ||
                     charities.length === 0 ||
@@ -173,11 +200,10 @@ export default function DonateModal({ onClose }) {
                 </button>
               </div>
 
-              {/* Donation Summary */}
               {amount && selectedCharity && (
-                <div className="mt-4 p-3 bg-green-50 rounded text-sm">
-                  <p className="text-green-800">
-                    You're about to donate ₹{amount} to{' '}
+                <div className="mt-4 p-3 bg-green-50 rounded-lg">
+                  <p className="text-green-800 text-sm">
+                    You&apos;re about to donate <strong>₹{amount}</strong> to{' '}
                     <strong>{selectedCharityName || 'selected charity'}</strong>
                   </p>
                 </div>
@@ -185,27 +211,25 @@ export default function DonateModal({ onClose }) {
             </>
           ) : (
             <>
-              {/* Payment Summary */}
               <div className="mb-4 p-4 bg-gray-50 rounded-lg">
                 <p className="text-sm text-gray-600 mb-2">Donation Details:</p>
-                <p className="font-semibold">Amount: ₹{amount}</p>
+                <p className="font-semibold text-gray-900">Amount: ₹{amount}</p>
                 <p className="text-sm text-gray-600 mt-1">
                   Charity: {selectedCharityName}
                 </p>
               </div>
 
-              {/* Razorpay Payment Button */}
               <RazorpayPayment
                 amount={Number(amount)}
                 charityId={selectedCharity}
-                charityName={selectedCharityName}
+                charityName={selectedCharityName || ''}
                 onSuccess={handlePaymentSuccess}
                 onClose={() => setShowPayment(false)}
               />
 
               <button
                 onClick={() => setShowPayment(false)}
-                className="w-full mt-3 border py-2 rounded hover:bg-gray-50 transition-colors"
+                className="w-full mt-3 border border-gray-300 py-2.5 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors"
               >
                 Back
               </button>

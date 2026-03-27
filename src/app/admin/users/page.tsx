@@ -1,9 +1,13 @@
-// app/admin/page.js (Updated with improved button styling)
 'use client';
 
 import { useEffect, useState } from 'react';
 import { auth, db } from '@/lib/firebase';
-import { onAuthStateChanged } from 'firebase/auth';
+import {
+  onAuthStateChanged,
+  User,
+  sendSignInLinkToEmail,
+  AuthError,
+} from 'firebase/auth';
 import { isAdmin } from '@/lib/adminCheck';
 import { useRouter } from 'next/navigation';
 import {
@@ -12,14 +16,50 @@ import {
   doc,
   deleteDoc,
   updateDoc,
+  DocumentData,
+  QueryDocumentSnapshot,
+  Timestamp,
 } from 'firebase/firestore';
-import { sendSignInLinkToEmail } from 'firebase/auth';
 import { toast } from 'sonner';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 
+// Define User type
+interface UserData {
+  id: string;
+  firstname?: string;
+  lastname?: string;
+  email?: string;
+  mobile?: string;
+  disabled?: boolean;
+  createdAt?: Timestamp;
+}
+
+// Define Edit User Data type
+interface EditUserData {
+  firstname: string;
+  lastname: string;
+  email: string;
+  mobile: string;
+}
+
+// Loader Component Props
+interface LoaderProps {
+  size?: 'sm' | 'md' | 'lg';
+}
+
+// Action Button Props
+interface ActionButtonProps {
+  onClick: () => void;
+  disabled?: boolean;
+  loading?: boolean;
+  children: React.ReactNode;
+  variant?: 'primary' | 'danger' | 'warning' | 'success' | 'outline';
+  className?: string;
+}
+
 // Loader Component
-const Loader = ({ size = 'sm' }) => {
+const Loader = ({ size = 'sm' }: LoaderProps) => {
   const sizeClasses = {
     sm: 'h-4 w-4',
     md: 'h-6 w-6',
@@ -38,12 +78,12 @@ const Loader = ({ size = 'sm' }) => {
 // Action Button Component
 const ActionButton = ({
   onClick,
-  disabled,
-  loading,
+  disabled = false,
+  loading = false,
   children,
   variant = 'primary',
   className = '',
-}) => {
+}: ActionButtonProps) => {
   const variants = {
     primary: 'bg-blue-500 hover:bg-blue-600 focus:ring-blue-500',
     danger: 'bg-red-500 hover:bg-red-600 focus:ring-red-500',
@@ -73,35 +113,37 @@ const ActionButton = ({
 
 export default function AdminPage() {
   const router = useRouter();
-  const [loading, setLoading] = useState(true);
-  const [users, setUsers] = useState<any[]>([]);
-  const [showInvite, setShowInvite] = useState(false);
-  const [fetchingUsers, setFetchingUsers] = useState(false);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [users, setUsers] = useState<UserData[]>([]);
+  const [showInvite, setShowInvite] = useState<boolean>(false);
+  const [fetchingUsers, setFetchingUsers] = useState<boolean>(false);
   const [deletingUser, setDeletingUser] = useState<string | null>(null);
-  const [updatingUser, setUpdatingUser] = useState(false);
-  const [sendingInvite, setSendingInvite] = useState(false);
-  const [editUser, setEditUser] = useState<any>(null);
+  const [updatingUser, setUpdatingUser] = useState<boolean>(false);
+  const [sendingInvite, setSendingInvite] = useState<boolean>(false);
+  const [editUser, setEditUser] = useState<UserData | null>(null);
 
   // Admin check
   useEffect(() => {
-    const unsub = onAuthStateChanged(auth, async (user) => {
+    const unsub = onAuthStateChanged(auth, async (user: User | null) => {
       if (!user) return router.push('/');
       const admin = await isAdmin(user.uid);
       if (!admin) return router.push('/');
       setLoading(false);
     });
     return () => unsub();
-  }, []);
+  }, [router]);
 
   // Fetch users
-  const fetchUsers = async () => {
+  const fetchUsers = async (): Promise<void> => {
     setFetchingUsers(true);
     try {
       const snap = await getDocs(collection(db, 'users'));
-      const list = snap.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      }));
+      const list: UserData[] = snap.docs.map(
+        (doc: QueryDocumentSnapshot<DocumentData>) => ({
+          id: doc.id,
+          ...doc.data(),
+        }),
+      ) as UserData[];
       setUsers(list);
     } catch (error) {
       console.error('Error fetching users:', error);
@@ -116,7 +158,7 @@ export default function AdminPage() {
   }, []);
 
   // Delete user
-  const handleDelete = async (id: string) => {
+  const handleDelete = async (id: string): Promise<void> => {
     setDeletingUser(id);
     try {
       await deleteDoc(doc(db, 'users', id));
@@ -131,7 +173,7 @@ export default function AdminPage() {
   };
 
   // Toggle disable
-  const toggleDisable = async (user: any) => {
+  const toggleDisable = async (user: UserData): Promise<void> => {
     setUpdatingUser(true);
     try {
       await updateDoc(doc(db, 'users', user.id), {
@@ -168,9 +210,10 @@ export default function AdminPage() {
         toast.success('Invite sent successfully 🎉');
         resetForm();
         setShowInvite(false);
-      } catch (error: any) {
+      } catch (error: unknown) {
         console.log(error);
-        if (error.code === 'auth/invalid-email') {
+        const authError = error as AuthError;
+        if (authError.code === 'auth/invalid-email') {
           toast.error('Invalid email');
         } else {
           toast.error('Failed to send invite');
@@ -197,7 +240,9 @@ export default function AdminPage() {
         .matches(/^[0-9]{10}$/, 'Mobile must be 10 digits')
         .required('Mobile is required'),
     }),
-    onSubmit: async (values) => {
+    onSubmit: async (values: EditUserData) => {
+      if (!editUser) return;
+
       setUpdatingUser(true);
       try {
         await updateDoc(doc(db, 'users', editUser.id), {
@@ -238,7 +283,7 @@ export default function AdminPage() {
           </div>
           <button
             onClick={() => setShowInvite(true)}
-            className="inline-flex items-center gap-2 bg-gradient-to-r from-green-600 to-green-500 text-white px-5 py-2.5 rounded-lg hover:from-green-700 hover:to-green-600 transition-all duration-200 shadow-md hover:shadow-lg text-sm font-medium"
+            className="inline-flex items-center gap-2 bg-linear-to-r from-green-600 to-green-500 text-white px-5 py-2.5 rounded-lg hover:from-green-700 hover:to-green-600 transition-all duration-200 shadow-md hover:shadow-lg text-sm font-medium"
           >
             <svg
               className="w-5 h-5"
@@ -284,14 +329,14 @@ export default function AdminPage() {
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-200 bg-white">
-                    {users.map((user: any) => (
+                    {users.map((user: UserData) => (
                       <tr
                         key={user.id}
                         className="hover:bg-gray-50 transition-colors duration-150"
                       >
                         <td className="py-3 px-4">
                           <div className="flex items-center gap-3">
-                            <div className="flex-shrink-0 h-8 w-8 bg-gradient-to-r from-blue-500 to-blue-600 rounded-full flex items-center justify-center text-white text-sm font-medium">
+                            <div className="shrink-0 h-8 w-8 bg-linear-to-r from-blue-500 to-blue-600 rounded-full flex items-center justify-center text-white text-sm font-medium">
                               {user.firstname?.[0]}
                               {user.lastname?.[0]}
                             </div>
@@ -509,7 +554,7 @@ export default function AdminPage() {
                   </button>
                   <button
                     type="submit"
-                    className="flex-1 bg-gradient-to-r from-green-600 to-green-500 text-white px-4 py-2 rounded-lg hover:from-green-700 hover:to-green-600 transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+                    className="flex-1 bg-linear-to-r from-green-600 to-green-500 text-white px-4 py-2 rounded-lg hover:from-green-700 hover:to-green-600 transition-all disabled:opacity-50 flex items-center justify-center gap-2"
                     disabled={sendingInvite}
                   >
                     {sendingInvite && <Loader size="sm" />}
@@ -617,7 +662,7 @@ export default function AdminPage() {
                   </button>
                   <button
                     type="submit"
-                    className="flex-1 bg-gradient-to-r from-green-600 to-green-500 text-white px-4 py-2 rounded-lg hover:from-green-700 hover:to-green-600 transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+                    className="flex-1 bg-linear-to-r from-green-600 to-green-500 text-white px-4 py-2 rounded-lg hover:from-green-700 hover:to-green-600 transition-all disabled:opacity-50 flex items-center justify-center gap-2"
                     disabled={updatingUser}
                   >
                     {updatingUser && <Loader size="sm" />}

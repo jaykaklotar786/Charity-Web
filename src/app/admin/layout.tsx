@@ -2,18 +2,23 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
-import { usePathname } from 'next/navigation';
-import router from 'next/dist/shared/lib/router/router';
+import { usePathname, useRouter } from 'next/navigation';
 import { isAdmin } from '@/lib/adminCheck';
 import { auth } from '@/lib/firebase';
-import { onAuthStateChanged } from '@firebase/auth';
+import { onAuthStateChanged, User } from 'firebase/auth';
 import { useEffect } from 'react';
 
-export default function AdminLayout({ children }) {
+// Define props type
+interface AdminLayoutProps {
+  children: React.ReactNode;
+}
+
+export default function AdminLayout({ children }: AdminLayoutProps) {
   const pathname = usePathname();
+  const router = useRouter();
 
   useEffect(() => {
-    const unsub = onAuthStateChanged(auth, async (user) => {
+    const unsub = onAuthStateChanged(auth, async (user: User | null) => {
       if (!user) return router.push('/');
 
       const admin = await isAdmin(user.uid);
@@ -21,7 +26,25 @@ export default function AdminLayout({ children }) {
     });
 
     return () => unsub();
-  }, []);
+  }, [router]);
+
+  const navItems = [
+    {
+      href: '/admin/users',
+      label: 'Users',
+      path: '/admin/users',
+    },
+    {
+      href: '/admin/charity',
+      label: 'Charity',
+      path: '/admin/charity',
+    },
+    {
+      href: '/admin/donations',
+      label: 'Donations',
+      path: '/admin/donations',
+    },
+  ];
 
   return (
     <div className="flex h-screen bg-gray-100">
@@ -33,36 +56,21 @@ export default function AdminLayout({ children }) {
             alt="Logo"
             width={150}
             height={38}
+            priority
           />
         </Link>
-        <Link
-          href="/admin/users"
-          className={`p-2 rounded mb-3 ${
-            pathname === '/admin/users' ? 'bg-[#7CB518]' : 'hover:bg-[#3d4a22]'
-          }`}
-        >
-          Users
-        </Link>
-        <Link
-          href="/admin/Charity"
-          className={`p-2 rounded mb-3 ${
-            pathname === '/admin/Charity'
-              ? 'bg-[#7CB518]'
-              : 'hover:bg-[#3d4a22]'
-          }`}
-        >
-          Charity
-        </Link>
-        <Link
-          href="/admin/Donates"
-          className={`p-2 rounded  ${
-            pathname === '/admin/Donates'
-              ? 'bg-[#7CB518]'
-              : 'hover:bg-[#435520]'
-          }`}
-        >
-          Donations
-        </Link>
+
+        {navItems.map((item) => (
+          <Link
+            key={item.href}
+            href={item.href}
+            className={`p-2 rounded mb-3 transition-colors duration-200 ${
+              pathname === item.path ? 'bg-[#7CB518]' : 'hover:bg-[#3d4a22]'
+            }`}
+          >
+            {item.label}
+          </Link>
+        ))}
       </div>
 
       <div className="flex-1 p-6 overflow-y-auto">{children}</div>

@@ -90,7 +90,7 @@ export default function StoriesSection() {
               'logo-05.svg',
               'logo-06.svg',
             ].map((logo, index) => (
-              <div key={index} className="relative w-full h-[60px]">
+              <div key={index} className="relative w-full h-15">
                 <Image
                   src={`/Images/${logo}`}
                   alt="partner logo"
