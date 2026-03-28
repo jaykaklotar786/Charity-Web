@@ -6,6 +6,7 @@ import './globals.css';
 import { cn } from '@/lib/utils';
 import { Toaster } from 'sonner';
 import Script from 'next/script';
+import { TooltipProvider } from '@/components/ui/tooltip';
 
 const dmSans = DM_Sans({
   subsets: ['latin'],
@@ -42,7 +43,7 @@ export default function RootLayout({
           'overflow-x-hidden',
         )}
       >
-        {children}
+        <TooltipProvider>{children}</TooltipProvider>
         <Toaster richColors position="top-right" />
       </body>
     </html>

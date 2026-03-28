@@ -11,6 +11,14 @@ import {
   QueryDocumentSnapshot,
 } from 'firebase/firestore';
 import { toast } from 'sonner';
+import {
+  RefreshCw,
+  DollarSign,
+  Users,
+  Calendar,
+  Mail,
+  Phone,
+} from 'lucide-react';
 
 // Define types
 interface Donation {
@@ -92,10 +100,10 @@ export default function DonationsPage() {
       });
 
       setCharities(cMap);
-      toast.success('Donations loaded successfully ');
+      toast.success('Donations loaded successfully ✅');
     } catch (error) {
       console.error(error);
-      toast.error('Failed to load donations ');
+      toast.error('Failed to load donations ❌');
     } finally {
       setLoading(false);
       setFetching(false);
@@ -126,9 +134,14 @@ export default function DonationsPage() {
     0,
   );
 
+  // Calculate stats
+  const uniqueDonors = new Set(donations.map((d) => d.userEmail)).size;
+  const averageDonation =
+    donations.length > 0 ? totalAmount / donations.length : 0;
+
   if (loading) {
     return (
-      <div className="flex justify-center items-center min-h-100">
+      <div className="flex justify-center items-center min-h-[400px]">
         <Loader size="lg" />
       </div>
     );
@@ -137,19 +150,67 @@ export default function DonationsPage() {
   return (
     <div className="w-full max-w-full overflow-x-hidden">
       <div className="p-4 md:p-6">
-        {/* Header with Stats */}
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
-          <div>
-            <h2 className="text-2xl font-bold text-gray-900">Donations</h2>
-            <p className="text-gray-600 mt-1">
-              Total Donations: ₹{totalAmount.toLocaleString('en-IN')}
-            </p>
+        {/* Header */}
+        <div className="mb-6">
+          <h1 className="text-2xl md:text-3xl font-bold text-gray-900">
+            Donations
+          </h1>
+          <p className="text-sm text-gray-500 mt-1">
+            Track and manage all donation transactions
+          </p>
+        </div>
+
+        {/* Stats Cards */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-500">Total Donations</p>
+                <p className="text-2xl font-bold text-gray-900">
+                  ₹{totalAmount.toLocaleString('en-IN')}
+                </p>
+              </div>
+              <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
+                <DollarSign className="w-6 h-6 text-green-600" />
+              </div>
+            </div>
           </div>
 
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-500">Total Donations Count</p>
+                <p className="text-2xl font-bold text-gray-900">
+                  {donations.length}
+                </p>
+              </div>
+              <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
+                <Users className="w-6 h-6 text-blue-600" />
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-500">Unique Donors</p>
+                <p className="text-2xl font-bold text-gray-900">
+                  {uniqueDonors}
+                </p>
+              </div>
+              <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center">
+                <Users className="w-6 h-6 text-purple-600" />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Refresh Button */}
+        <div className="mb-6">
           <button
             onClick={fetchData}
             disabled={fetching}
-            className="inline-flex items-center gap-2 bg-linear-to-r from-green-600 to-green-500 text-white px-4 py-2 rounded-lg hover:from-green-700 hover:to-green-600 transition-all duration-200 shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed text-sm md:text-base"
+            className="inline-flex items-center gap-2 bg-gradient-to-r from-green-600 to-green-500 text-white px-4 py-2 rounded-lg hover:from-green-700 hover:to-green-600 transition-all duration-200 shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed text-sm"
           >
             {fetching ? (
               <>
@@ -158,101 +219,18 @@ export default function DonationsPage() {
               </>
             ) : (
               <>
-                <svg
-                  className="w-4 h-4"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
-                  />
-                </svg>
-                <span>Refresh</span>
+                <RefreshCw className="w-4 h-4" />
+                <span>Refresh Data</span>
               </>
             )}
           </button>
         </div>
 
-        {/* Donations Table */}
+        {/* Donations Table/Cards */}
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th className="py-3.5 px-3 md:px-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                    User
-                  </th>
-                  <th className="py-3.5 px-3 md:px-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                    Amount
-                  </th>
-                  <th className="py-3.5 px-3 md:px-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                    Charity
-                  </th>
-                  <th className="py-3.5 px-3 md:px-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                    Date
-                  </th>
-                </tr>
-              </thead>
-
-              <tbody className="divide-y divide-gray-200 bg-white">
-                {donations.map((d: Donation) => (
-                  <tr
-                    key={d.id}
-                    className="hover:bg-gray-50 transition-colors duration-150"
-                  >
-                    <td className="py-3 px-3 md:px-4">
-                      <div className="max-w-50 md:max-w-none">
-                        <p className="text-sm font-medium text-gray-900 truncate">
-                          {d.userEmail || 'N/A'}
-                        </p>
-                        {d.userId && (
-                          <p className="text-xs text-gray-500 truncate mt-0.5">
-                            ID: {d.userId.slice(0, 8)}...
-                          </p>
-                        )}
-                      </div>
-                    </td>
-                    <td className="py-3 px-3 md:px-4">
-                      <span className="text-sm font-semibold text-green-600 whitespace-nowrap">
-                        ₹ {d.amount?.toLocaleString('en-IN') || 0}
-                      </span>
-                    </td>
-                    <td className="py-3 px-3 md:px-4">
-                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 whitespace-nowrap">
-                        {charities[d.charityId] || 'Unknown'}
-                      </span>
-                    </td>
-                    <td className="py-3 px-3 md:px-4">
-                      <span className="text-xs text-gray-500 whitespace-nowrap">
-                        {formatDate(d.createdAt)}
-                      </span>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-
-          {/* Empty State */}
-          {donations.length === 0 && (
+          {donations.length === 0 ? (
             <div className="text-center py-12">
-              <svg
-                className="mx-auto h-12 w-12 text-gray-400"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={1.5}
-                  d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                />
-              </svg>
+              <DollarSign className="mx-auto h-12 w-12 text-gray-400" />
               <p className="mt-2 text-gray-500 text-lg">
                 No donations available
               </p>
@@ -260,23 +238,122 @@ export default function DonationsPage() {
                 Be the first to make a donation!
               </p>
             </div>
-          )}
+          ) : (
+            <>
+              {/* Desktop Table View - Hidden on mobile */}
+              <div className="hidden md:block overflow-x-auto">
+                <table className="min-w-full divide-y divide-gray-200">
+                  <thead className="bg-gray-50">
+                    <tr>
+                      <th className="py-3.5 px-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                        User
+                      </th>
+                      <th className="py-3.5 px-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                        Amount
+                      </th>
+                      <th className="py-3.5 px-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                        Charity
+                      </th>
+                      <th className="py-3.5 px-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                        Date
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-200 bg-white">
+                    {donations.map((d: Donation) => (
+                      <tr
+                        key={d.id}
+                        className="hover:bg-gray-50 transition-colors duration-150"
+                      >
+                        <td className="py-3 px-4">
+                          <div>
+                            <p className="text-sm font-medium text-gray-900 flex items-center gap-1">
+                              <Mail className="w-3 h-3 text-gray-400" />
+                              {d.userEmail || 'N/A'}
+                            </p>
+                            {d.userId && (
+                              <p className="text-xs text-gray-500 mt-0.5">
+                                ID: {d.userId.slice(0, 8)}...
+                              </p>
+                            )}
+                          </div>
+                        </td>
+                        <td className="py-3 px-4">
+                          <span className="text-sm font-semibold text-green-600 whitespace-nowrap">
+                            ₹ {d.amount?.toLocaleString('en-IN') || 0}
+                          </span>
+                        </td>
+                        <td className="py-3 px-4">
+                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                            {charities[d.charityId] || 'Unknown'}
+                          </span>
+                        </td>
+                        <td className="py-3 px-4">
+                          <span className="text-xs text-gray-500 flex items-center gap-1">
+                            <Calendar className="w-3 h-3" />
+                            {formatDate(d.createdAt)}
+                          </span>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
 
-          {/* Donations Count */}
-          {donations.length > 0 && (
-            <div className="border-t border-gray-200 px-3 md:px-4 py-3 bg-gray-50">
-              <p className="text-xs text-gray-500">
-                Showing <span className="font-medium">{donations.length}</span>{' '}
-                donation
-                {donations.length !== 1 ? 's' : ''}
-              </p>
-            </div>
+              {/* Mobile Card View - Visible on mobile */}
+              <div className="md:hidden divide-y divide-gray-200">
+                {donations.map((d: Donation) => (
+                  <div
+                    key={d.id}
+                    className="p-4 hover:bg-gray-50 transition-colors"
+                  >
+                    <div className="flex justify-between items-start mb-2">
+                      <div className="flex-1">
+                        <p className="text-sm font-medium text-gray-900 flex items-center gap-1">
+                          <Mail className="w-3 h-3 text-gray-400 shrink-0" />
+                          <span className="break-all">
+                            {d.userEmail || 'N/A'}
+                          </span>
+                        </p>
+                        {d.userId && (
+                          <p className="text-xs text-gray-500 mt-1">
+                            ID: {d.userId.slice(0, 8)}...
+                          </p>
+                        )}
+                      </div>
+                      <span className="text-base font-bold text-green-600 shrink-0 ml-2">
+                        ₹ {d.amount?.toLocaleString('en-IN') || 0}
+                      </span>
+                    </div>
+
+                    <div className="flex flex-wrap gap-2 mt-2">
+                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                        {charities[d.charityId] || 'Unknown'}
+                      </span>
+                      <span className="inline-flex items-center gap-1 text-xs text-gray-500">
+                        <Calendar className="w-3 h-3" />
+                        {formatDate(d.createdAt)}
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Donations Count */}
+              <div className="border-t border-gray-200 px-4 py-3 bg-gray-50">
+                <p className="text-xs text-gray-500">
+                  Showing{' '}
+                  <span className="font-medium">{donations.length}</span>{' '}
+                  donation{donations.length !== 1 ? 's' : ''}
+                </p>
+              </div>
+            </>
           )}
         </div>
 
         {/* Refresh Indicator */}
         {fetching && donations.length > 0 && (
-          <div className="fixed bottom-4 right-4 bg-white shadow-lg rounded-lg p-3 flex items-center gap-2 animate-in fade-in slide-in-from-bottom-5 border border-gray-200">
+          <div className="fixed bottom-4 right-4 bg-white shadow-lg rounded-lg p-3 flex items-center gap-2 animate-in fade-in slide-in-from-bottom-5 border border-gray-200 z-50">
             <Loader size="sm" />
             <span className="text-sm text-gray-600">Updating donations...</span>
           </div>

@@ -79,7 +79,7 @@ export function Header() {
           {/* Logo */}
           <Link href="/" className="flex items-center">
             <Image
-              src="/images/site-logo-white.svg"
+              src="/Images/site-logo-white.svg"
               alt="Charity Logo"
               width={150}
               height={38}
