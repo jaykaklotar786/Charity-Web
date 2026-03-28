@@ -321,7 +321,7 @@ export default function AdminPage() {
                 <Users className="mx-auto h-12 w-12 text-gray-400" />
                 <p className="mt-2 text-gray-500">No users found</p>
                 <p className="text-sm text-gray-400 mt-1">
-                  Click "Invite New User" to get started
+                  Click &quot;Invite New User&quot; to get started
                 </p>
               </div>
             ) : (
