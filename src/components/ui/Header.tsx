@@ -7,7 +7,7 @@ import { auth } from '@/lib/firebase';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
-import { Menu, X, Shield } from 'lucide-react';
+import { Menu, X, Shield, Heart } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import DonateModal from '@/components/DonateModal';
 import { isAdmin } from '@/lib/adminCheck';
@@ -16,7 +16,6 @@ import { isAdmin } from '@/lib/adminCheck';
 interface NavItem {
   href: string;
   label: string;
-  adminOnly?: boolean;
 }
 
 export function Header() {
@@ -37,19 +36,11 @@ export function Header() {
     { href: '/contact', label: 'Contact' },
   ];
 
-  // Admin navigation item (only visible to admin)
-  const adminNavItem: NavItem = {
-    href: '/admin/users',
-    label: 'Admin Panel',
-    adminOnly: true,
-  };
-
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(
       auth,
       async (currentUser: User | null) => {
         setUser(currentUser);
-        setLoading(false);
 
         // Check if user is admin
         if (currentUser) {
@@ -58,6 +49,8 @@ export function Header() {
         } else {
           setIsAdminUser(false);
         }
+
+        setLoading(false);
       },
     );
 
@@ -115,9 +108,18 @@ export function Header() {
           </nav>
 
           {/* Auth Buttons */}
-          <div className="flex gap-4">
+          <div className="flex gap-3 items-center">
             {loading ? null : user ? (
               <>
+                {/* My Donations Button */}
+                <Link href="/my-donations">
+                  <button className="bg-white text-[#2C3A04] px-4 py-2 rounded-lg hover:bg-gray-100 transition-colors text-sm font-medium flex items-center gap-2">
+                    <Heart size={16} />
+                    My Donations
+                  </button>
+                </Link>
+
+                {/* Donate Button */}
                 <Button
                   onClick={() => setShowDonate(true)}
                   className="bg-white text-[#2C3A04] text-[18px] px-6 py-4.5 rounded-b-sm font-semibold transition-all duration-300 hover:bg-[#7FBF2F] hover:text-[#2C3A04] w-[111.66px] h-13.5"
@@ -125,9 +127,10 @@ export function Header() {
                   Donate
                 </Button>
 
+                {/* Logout Button */}
                 <button
                   onClick={handleSignOut}
-                  className="bg-[#7CB518] text-white px-4 py-2 rounded hover:bg-[#6a9e14] transition-colors"
+                  className="bg-[#7CB518] text-white px-4 py-2 rounded-lg hover:bg-[#6a9e14] transition-colors text-sm font-medium"
                 >
                   Logout
                 </button>
@@ -135,13 +138,13 @@ export function Header() {
             ) : (
               <>
                 <Link href="/signin">
-                  <button className="bg-[#7CB518] px-4 py-2 rounded hover:bg-[#6a9e14] transition-colors text-white">
+                  <button className="bg-[#7CB518] px-4 py-2 rounded-lg hover:bg-[#6a9e14] transition-colors text-white text-sm font-medium">
                     Sign In
                   </button>
                 </Link>
 
                 <Link href="/signup">
-                  <button className="bg-[#7CB518] text-white px-4 py-2 rounded hover:bg-[#6a9e14] transition-colors">
+                  <button className="bg-[#7CB518] text-white px-4 py-2 rounded-lg hover:bg-[#6a9e14] transition-colors text-sm font-medium">
                     Sign Up
                   </button>
                 </Link>
@@ -176,6 +179,18 @@ export function Header() {
                 </Link>
               ))}
 
+              {/* My Donations Link in Mobile Menu - Only for logged in users */}
+              {!loading && user && (
+                <Link
+                  href="/my-donations"
+                  onClick={() => setIsMenuOpen(false)}
+                  className="py-2 flex items-center gap-2 hover:text-[#7FBF2F] transition-colors text-gray-700"
+                >
+                  <Heart size={16} />
+                  <span>My Donations</span>
+                </Link>
+              )}
+
               {/* Admin Link in Mobile Menu */}
               {!loading && isAdminUser && (
                 <Link
@@ -190,6 +205,49 @@ export function Header() {
                   <Shield size={16} />
                   <span>Admin Panel</span>
                 </Link>
+              )}
+
+              {/* Auth Buttons in Mobile Menu */}
+              {!loading && !user && (
+                <div className="pt-4 border-t border-gray-200 mt-2">
+                  <Link
+                    href="/signin"
+                    onClick={() => setIsMenuOpen(false)}
+                    className="block w-full text-center bg-[#7CB518] text-white px-4 py-2 rounded-lg mb-2"
+                  >
+                    Sign In
+                  </Link>
+                  <Link
+                    href="/signup"
+                    onClick={() => setIsMenuOpen(false)}
+                    className="block w-full text-center border border-[#7CB518] text-[#7CB518] px-4 py-2 rounded-lg"
+                  >
+                    Sign Up
+                  </Link>
+                </div>
+              )}
+
+              {!loading && user && (
+                <div className="pt-4 border-t border-gray-200 mt-2">
+                  <button
+                    onClick={() => {
+                      setShowDonate(true);
+                      setIsMenuOpen(false);
+                    }}
+                    className="block w-full text-center bg-[#7CB518] text-white px-4 py-2 rounded-lg mb-2"
+                  >
+                    Donate
+                  </button>
+                  <button
+                    onClick={() => {
+                      handleSignOut();
+                      setIsMenuOpen(false);
+                    }}
+                    className="block w-full text-center border border-red-500 text-red-500 px-4 py-2 rounded-lg"
+                  >
+                    Logout
+                  </button>
+                </div>
               )}
             </nav>
           </div>
