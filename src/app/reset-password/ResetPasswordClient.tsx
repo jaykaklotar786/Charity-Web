@@ -97,7 +97,7 @@ export default function ResetPasswordClient() {
     <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4">
       <div className="w-full max-w-md bg-white p-8 rounded-xl shadow-lg border border-gray-200">
         <div className="text-center mb-6">
-          <div className="w-16 h-16 bg-gradient-to-r from-green-500 to-green-600 rounded-full flex items-center justify-center mx-auto mb-4">
+          <div className="w-16 h-16 bg-linear-to-r from-green-500 to-green-600 rounded-full flex items-center justify-center mx-auto mb-4">
             <svg
               className="w-8 h-8 text-white"
               fill="none"
@@ -154,7 +154,7 @@ export default function ResetPasswordClient() {
           <button
             type="submit"
             disabled={loading || !newPassword || !confirmPassword}
-            className="w-full bg-gradient-to-r from-green-600 to-green-500 text-white px-4 py-2.5 rounded-lg hover:from-green-700 hover:to-green-600 transition disabled:opacity-50 flex items-center justify-center gap-2"
+            className="w-full bg-linear-to-r from-green-600 to-green-500 text-white px-4 py-2.5 rounded-lg hover:from-green-700 hover:to-green-600 transition disabled:opacity-50 flex items-center justify-center gap-2"
           >
             {loading ? (
               <>

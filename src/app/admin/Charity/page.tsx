@@ -82,7 +82,7 @@ export default function CharityPage() {
 
   // Calculate stats
   const totalCharities = charities.length;
-  const activeCharities = charities.length; // All charities are active
+  const activeCharities = charities.length;
 
   return (
     <div className="w-full max-w-full overflow-x-hidden">
@@ -152,7 +152,7 @@ export default function CharityPage() {
             <button
               onClick={handleAdd}
               disabled={adding || !name.trim()}
-              className="inline-flex items-center justify-center gap-2 bg-gradient-to-r from-green-600 to-green-500 text-white px-6 py-2.5 rounded-lg hover:from-green-700 hover:to-green-600 transition-all duration-200 shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+              className="inline-flex items-center justify-center gap-2 bg-linear-to-r from-green-600 to-green-500 text-white px-6 py-2.5 rounded-lg hover:from-green-700 hover:to-green-600 transition-all duration-200 shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {adding ? (
                 <>
@@ -210,7 +210,7 @@ export default function CharityPage() {
                       className="px-6 py-4 hover:bg-gray-50 transition-colors duration-150 flex items-center gap-3"
                     >
                       <div className="shrink-0">
-                        <div className="w-10 h-10 bg-gradient-to-r from-green-500 to-green-600 rounded-lg flex items-center justify-center text-white font-semibold">
+                        <div className="w-10 h-10 bg-linear-to-r from-green-500 to-green-600 rounded-lg flex items-center justify-center text-white font-semibold">
                           {(c.name?.charAt(0) || '?').toUpperCase()}
                         </div>
                       </div>
@@ -242,7 +242,7 @@ export default function CharityPage() {
                   >
                     <div className="flex items-start gap-3">
                       <div className="shrink-0">
-                        <div className="w-12 h-12 bg-gradient-to-r from-green-500 to-green-600 rounded-xl flex items-center justify-center text-white font-semibold text-lg">
+                        <div className="w-12 h-12 bg-linear-to-r from-green-500 to-green-600 rounded-xl flex items-center justify-center text-white font-semibold text-lg">
                           {(c.name?.charAt(0) || '?').toUpperCase()}
                         </div>
                       </div>

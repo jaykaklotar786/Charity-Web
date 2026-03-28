@@ -303,7 +303,7 @@ export default function AdminPage() {
           <div className="mb-6">
             <button
               onClick={() => setShowInvite(true)}
-              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-gradient-to-r from-green-600 to-green-500 text-white px-5 py-2.5 rounded-lg hover:from-green-700 hover:to-green-600 transition-all duration-200 shadow-md hover:shadow-lg text-sm font-medium"
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-linear-to-r from-green-600 to-green-500 text-white px-5 py-2.5 rounded-lg hover:from-green-700 hover:to-green-600 transition-all duration-200 shadow-md hover:shadow-lg text-sm font-medium"
             >
               <Plus className="w-5 h-5" />
               Invite New User
@@ -353,7 +353,7 @@ export default function AdminPage() {
                         >
                           <td className="py-3 px-4">
                             <div className="flex items-center gap-3">
-                              <div className="shrink-0 h-8 w-8 bg-gradient-to-r from-blue-500 to-blue-600 rounded-full flex items-center justify-center text-white text-sm font-medium">
+                              <div className="shrink-0 h-8 w-8 bg-linear-to-r from-blue-500 to-blue-600 rounded-full flex items-center justify-center text-white text-sm font-medium">
                                 {user.firstname?.[0]}
                                 {user.lastname?.[0]}
                               </div>
@@ -464,7 +464,7 @@ export default function AdminPage() {
                     >
                       <div className="flex items-start justify-between mb-3">
                         <div className="flex items-center gap-3 flex-1">
-                          <div className="shrink-0 h-12 w-12 bg-gradient-to-r from-blue-500 to-blue-600 rounded-full flex items-center justify-center text-white font-semibold text-lg">
+                          <div className="shrink-0 h-12 w-12 bg-linear-to-r from-blue-500 to-blue-600 rounded-full flex items-center justify-center text-white font-semibold text-lg">
                             {user.firstname?.[0]}
                             {user.lastname?.[0]}
                           </div>
@@ -594,7 +594,7 @@ export default function AdminPage() {
                       </button>
                       <button
                         type="submit"
-                        className="flex-1 bg-gradient-to-r from-green-600 to-green-500 text-white px-4 py-2 rounded-lg hover:from-green-700 hover:to-green-600 transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+                        className="flex-1 bg-linear-to-r from-green-600 to-green-500 text-white px-4 py-2 rounded-lg hover:from-green-700 hover:to-green-600 transition-all disabled:opacity-50 flex items-center justify-center gap-2"
                         disabled={sendingInvite}
                       >
                         {sendingInvite && <Loader size="sm" />}
@@ -715,7 +715,7 @@ export default function AdminPage() {
                       </button>
                       <button
                         type="submit"
-                        className="flex-1 bg-gradient-to-r from-green-600 to-green-500 text-white px-4 py-2 rounded-lg hover:from-green-700 hover:to-green-600 transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+                        className="flex-1 bg-linear-to-r from-green-600 to-green-500 text-white px-4 py-2 rounded-lg hover:from-green-700 hover:to-green-600 transition-all disabled:opacity-50 flex items-center justify-center gap-2"
                         disabled={updatingUser}
                       >
                         {updatingUser && <Loader size="sm" />}
